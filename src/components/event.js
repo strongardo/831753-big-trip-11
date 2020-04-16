@@ -1,37 +1,37 @@
 import {TYPES, START_INDEX_FOR_ACTIVITY_TYPES, START_INDEX_FOR_OFFERS, LAST_INDEX_FOR_OFFERS} from "../const.js";
 import {changeFormat, changeTimeFormat} from "../utils.js";
 
+const getHeadingPretext = (type) => {
+  const isCurrentElement = (it) => {
+    return it === type;
+  };
+  return (TYPES.findIndex(isCurrentElement) < START_INDEX_FOR_ACTIVITY_TYPES) ? `to` : `in`;
+};
+
+const createTimeMarkup = (time) => {
+  const hour = time.getHours();
+  const minute = time.getMinutes();
+  return `${changeFormat(hour)}:${changeFormat(minute)}`;
+};
+
+const createOffersMarkup = (offers) => {
+  if (offers.length) {
+    return offers.slice(START_INDEX_FOR_OFFERS, LAST_INDEX_FOR_OFFERS).map((offer) => {
+      return (
+        `<li class="event__offer">
+          <span class="event__offer-title">${offer.name}</span>
+          &plus;
+          &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
+        </li>`
+      );
+    })
+      .join(`\n`);
+  } else {
+    return ``;
+  }
+};
+
 export const createEvent = (event) => {
-
-  const getHeadingPretext = (type) => {
-    const isCurrentElement = (it) => {
-      return it === type;
-    };
-    return (TYPES.findIndex(isCurrentElement) < START_INDEX_FOR_ACTIVITY_TYPES) ? `to` : `in`;
-  };
-
-  const createTimeMarkup = (time) => {
-    const hour = time.getHours();
-    const minute = time.getMinutes();
-    return `${changeFormat(hour)}:${changeFormat(minute)}`;
-  };
-
-  const createOffersMarkup = (offers) => {
-    if (offers.length) {
-      return offers.slice(START_INDEX_FOR_OFFERS, LAST_INDEX_FOR_OFFERS).map((offer) => {
-        return (
-          `<li class="event__offer">
-            <span class="event__offer-title">${offer.name}</span>
-            &plus;
-            &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
-          </li>`
-        );
-      })
-        .join(`\n`);
-    } else {
-      return ``;
-    }
-  };
 
   return (
     `<li class="trip-events__item">

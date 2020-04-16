@@ -1,48 +1,56 @@
 import {TRANSFER_TYPES, ACTIVITY_TYPES} from "../const.js";
 import {changeFormat} from "../utils.js";
 
-export const createEditForm = (event) => {
+const createTimeMarkup = (time) => {
+  const year = time.getFullYear().toString().slice(2);
+  return (
+    `${changeFormat(time.getDate())}/${changeFormat(time.getMonth())}/${year} ${changeFormat(time.getHours())}:${changeFormat(time.getMinutes())}`
+  );
+};
 
-  const createTimeMarkup = (time) => {
-    const year = time.getFullYear().toString().slice(2);
+const createTypesMarkup = (array) => {
+  return array.map((it) => {
     return (
-      `${changeFormat(time.getDate())}/${changeFormat(time.getMonth())}/${year} ${changeFormat(time.getHours())}:${changeFormat(time.getMinutes())}`
+      `<div class="event__type-item">
+        <input id="event-type-${it}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${it}">
+        <label class="event__type-label  event__type-label--${it}" for="event-type-${it}-1">${it}</label>
+      </div>`
     );
-  };
+  }).join(`\n`);
+};
 
-  const createTypesMarkup = (array) => {
-    return array.map((it) => {
-      return (
-        `<div class="event__type-item">
-          <input id="event-type-${it}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${it}">
-          <label class="event__type-label  event__type-label--${it}" for="event-type-${it}-1">${it}</label>
-        </div>`
-      );
-    }).join(`\n`);
-  };
+const createCitiesOptionsMarkup = (array) => {
+  return array.map((it) => {
+    return (
+      `<option value="${it}"></option>`
+    );
+  }).join(`\n`);
+};
 
-  const createCitiesOptionsMarkup = (array) => {
-    return array.map((it) => {
-      return (
-        `<option value="${it}"></option>`
-      );
-    }).join(`\n`);
-  };
+const createOffersMarkup = (array) => {
+  return array.map((it) => {
+    return (
+      `<div class="event__offer-selector">
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${it.type}-1" type="checkbox" name="event-offer-${it.type}-1" checked>
+        <label class="event__offer-label" for="event-offer-${it.type}-1">
+          <span class="event__offer-title">${it.name}</span>
+          &plus;
+          &euro;&nbsp;<span class="event__offer-price">${it.price}</span>
+        </label>
+      </div>`
+    );
+  }).join(`\n`);
+};
 
-  const createOffersMarkup = (array) => {
-    return array.map((it) => {
-      return (
-        `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${it.type}-1" type="checkbox" name="event-offer-${it.type}-1" checked>
-          <label class="event__offer-label" for="event-offer-${it.type}-1">
-            <span class="event__offer-title">${it.name}</span>
-            &plus;
-            &euro;&nbsp;<span class="event__offer-price">${it.price}</span>
-          </label>
-        </div>`
-      );
-    }).join(`\n`);
-  };
+const createPhotosMarkup = (array) => {
+  return array.map((it) => {
+    return (
+      `<img class="event__photo" src="${it}" alt="Event photo">`
+    );
+  }).join(`\n`);
+};
+
+export const createEditForm = (event) => {
 
   const createOffersContainerMarkup = () => {
     if (event.offers.length) {
@@ -57,14 +65,6 @@ export const createEditForm = (event) => {
     } else {
       return ``;
     }
-  };
-
-  const createPhotosMarkup = (array) => {
-    return array.map((it) => {
-      return (
-        `<img class="event__photo" src="${it}" alt="Event photo">`
-      );
-    }).join(`\n`);
   };
 
   return (
