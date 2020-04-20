@@ -1,8 +1,13 @@
-const changeFormat = (value) => {
-  return (value > 9) ? value : `0${value}`;
+export const RenderPosition = {
+  AFTERBEGIN: `afterbegin`,
+  BEFOREEND: `beforeend`
 };
 
-const changeTimeFormat = (value) => {
+export const changeFormat = (value) => {
+  return (value > 9) ? String(value) : `0${value}`;
+};
+
+export const changeTimeFormat = (value) => {
   if (value >= 1440) {
     const days = Math.round(value / 1440);
     const balance = value % 1440;
@@ -18,4 +23,20 @@ const changeTimeFormat = (value) => {
   }
 };
 
-export {changeFormat, changeTimeFormat};
+export const createElement = (template) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = template;
+
+  return newElement.firstChild;
+};
+
+export const render = (container, element, place) => {
+  switch (place) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+  }
+};

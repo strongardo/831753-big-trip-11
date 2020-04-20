@@ -1,13 +1,13 @@
 import {createElement} from "../utils.js";
-import {createDaysListTemplate} from "../templates/days-list.js";
+import {createNoEventsTemplate} from "../templates/no-events.js";
 
-export default class DaysList {
+export default class NoEvents {
   constructor() {
     this._element = null;
   }
 
   getTemplate() {
-    return createDaysListTemplate();
+    return createNoEventsTemplate();
   }
 
   getElement() {

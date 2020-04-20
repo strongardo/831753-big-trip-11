@@ -1,16 +1,24 @@
-export const createCost = (events) => {
+import {createElement} from "../utils.js";
+import {createCostTemplate} from "../templates/cost.js";
 
-  const getSum = () => {
-    let sum = 0;
-    events.forEach((it) => {
-      sum += it.price;
-    });
-    return sum;
-  };
+export default class Cost {
+  constructor(events) {
+    this._events = events;
+    this._element = null;
+  }
 
-  return (
-    `<p class="trip-info__cost">
-      Total: &euro;&nbsp;<span class="trip-info__cost-value">${getSum()}</span>
-    </p>`
-  );
-};
+  getTemplate() {
+    return createCostTemplate(this._events);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

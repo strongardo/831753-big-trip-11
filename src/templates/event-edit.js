@@ -2,9 +2,15 @@ import {TRANSFER_TYPES, ACTIVITY_TYPES} from "../const.js";
 import {changeFormat} from "../utils.js";
 
 const createTimeMarkup = (time) => {
+
+  const day = changeFormat(time.getDate());
+  const monthValue = changeFormat(time.getMonth());
   const year = time.getFullYear().toString().slice(2);
+  const hourValue = changeFormat(time.getHours());
+  const minute = changeFormat(time.getMinutes());
+
   return (
-    `${changeFormat(time.getDate())}/${changeFormat(time.getMonth())}/${year} ${changeFormat(time.getHours())}:${changeFormat(time.getMinutes())}`
+    `${day}/${monthValue}/${year} ${hourValue}:${minute}`
   );
 };
 
@@ -29,13 +35,18 @@ const createCitiesOptionsMarkup = (array) => {
 
 const createOffersMarkup = (array) => {
   return array.map((it) => {
+
+    const type = it.type;
+    const name = it.name;
+    const price = it.price;
+
     return (
       `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${it.type}-1" type="checkbox" name="event-offer-${it.type}-1" checked>
-        <label class="event__offer-label" for="event-offer-${it.type}-1">
-          <span class="event__offer-title">${it.name}</span>
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-1" type="checkbox" name="event-offer-${type}-1" checked>
+        <label class="event__offer-label" for="event-offer-${type}-1">
+          <span class="event__offer-title">${name}</span>
           &plus;
-          &euro;&nbsp;<span class="event__offer-price">${it.price}</span>
+          &euro;&nbsp;<span class="event__offer-price">${price}</span>
         </label>
       </div>`
     );
@@ -50,15 +61,18 @@ const createPhotosMarkup = (array) => {
   }).join(`\n`);
 };
 
-export const createEditForm = (event) => {
+export const createEventEditTemplate = (event) => {
 
   const createOffersContainerMarkup = () => {
     if (event.offers.length) {
+
+      const offersMarkup = createOffersMarkup(event.offers);
+
       return (
         `<section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
           <div class="event__available-offers">
-            ${createOffersMarkup(event.offers)}
+            ${offersMarkup}
           </div>
         </section>`
       );
@@ -67,25 +81,33 @@ export const createEditForm = (event) => {
     }
   };
 
+  const type = event.type;
+  const transferTypesMarkup = createTypesMarkup(TRANSFER_TYPES);
+  const activityTypesMarkup = createTypesMarkup(ACTIVITY_TYPES);
+  const citiesOptionsMarkup = createCitiesOptionsMarkup(event.someSities);
+  const offersContainerMarkup = createOffersContainerMarkup();
+  const description = event.info.description;
+  const photosMarkup = createPhotosMarkup(event.info.pictures);
+
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
       <header class="event__header">
       <div class="event__type-wrapper">
         <label class="event__type  event__type-btn" for="event-type-toggle-1">
           <span class="visually-hidden">Choose event type</span>
-          <img class="event__type-icon" width="17" height="17" src="img/icons/${event.type}.png" alt="${event.type}">
+          <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="${type}">
         </label>
         <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
         <div class="event__type-list">
           <fieldset class="event__type-group">
             <legend class="visually-hidden">Transfer</legend>
-            ${createTypesMarkup(TRANSFER_TYPES)}
+            ${transferTypesMarkup}
           </fieldset>
 
           <fieldset class="event__type-group">
             <legend class="visually-hidden">Activity</legend>
-            ${createTypesMarkup(ACTIVITY_TYPES)}
+            ${activityTypesMarkup}
           </fieldset>
         </div>
       </div>
@@ -96,7 +118,7 @@ export const createEditForm = (event) => {
         </label>
         <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="" list="destination-list-1">
         <datalist id="destination-list-1">
-          ${createCitiesOptionsMarkup(event.someSities)}
+          ${citiesOptionsMarkup}
         </datalist>
       </div>
 
@@ -126,15 +148,15 @@ export const createEditForm = (event) => {
 
     <section class="event__details">
 
-      ${createOffersContainerMarkup()}
+      ${offersContainerMarkup}
 
               <section class="event__section  event__section--destination">
                 <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-                <p class="event__destination-description">${event.info.description}</p>
+                <p class="event__destination-description">${description}</p>
 
                 <div class="event__photos-container">
                   <div class="event__photos-tape">
-                    ${createPhotosMarkup(event.info.pictures)}
+                    ${photosMarkup}
                   </div>
                 </div>
               </section>
