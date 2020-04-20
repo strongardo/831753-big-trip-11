@@ -34,7 +34,7 @@ const getRandomDate = (duringDate = new Date()) => {
 };
 
 
-const types = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`, `Check-in`, `Sightseeing`, `Restaurant`];
+export const types = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`, `Check-in`, `Sightseeing`, `Restaurant`];
 const cities = [`New York`, `Los Angeles`, `Chicago`, `Houston`, `Phoenix`, `Philadelphia`, `San Antonio`, `San Diego`, `Dallas`, `San Jose`, `Austin`, `Jacksonville`, `Fort Worth`, `Columbus`, `San Francisco`, `Charlotte`, `Indianapolis`, `Seattle`, `Denver`, `Washington`];
 const offers = [
   {
@@ -102,7 +102,7 @@ const createTimes = () => {
   });
 };
 
-const generateEvents = () => {
+export const generateEvents = () => {
   return createTimes().map((it) => {
 
     return {
@@ -124,7 +124,5 @@ const generateEvents = () => {
     };
   });
 };
-
-export {generateEvents, types};
 
 

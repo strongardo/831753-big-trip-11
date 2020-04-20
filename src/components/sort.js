@@ -1,13 +1,13 @@
 import {createElement} from "../utils.js";
-import {createDaysListTemplate} from "../templates/days-list.js";
+import {createSortTemplate} from "../templates/sort.js";
 
-export default class DaysList {
+export default class Sort {
   constructor() {
     this._element = null;
   }
 
   getTemplate() {
-    return createDaysListTemplate();
+    return createSortTemplate();
   }
 
   getElement() {
