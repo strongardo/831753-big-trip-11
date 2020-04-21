@@ -88,23 +88,49 @@ const renderContent = () => {
 
     currentEvents.forEach((currentEvent) => {
       const eventComponent = new EventComponent(currentEvent);
-      const eventElement = eventComponent.getElement();
       const eventEditComponent = new EventEditComponent(currentEvent);
+
+      const eventElement = eventComponent.getElement();
       const eventEditElement = eventEditComponent.getElement();
+
       const openEventEditButton = eventElement.querySelector(`.event__rollup-btn`);
       const closeEventEditButton = eventEditElement.querySelector(`.event__reset-btn`);
 
-      const onOpenEventEditButtonClick = () => {
+      const replaceEventToEdit = () => {
         tripEventsList.replaceChild(eventEditElement, eventElement);
+      };
+
+      const replaceEditToEvent = () => {
+        tripEventsList.replaceChild(eventElement, eventEditElement);
+      };
+
+      const removeOnEscKeyDownHandler = () => {
+        document.removeEventListener(`keydown`, onEscKeyDown);
+      };
+
+      const onEscKeyDown = (evt) => {
+        const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+
+        if (isEscKey) {
+          replaceEditToEvent();
+          removeOnEscKeyDownHandler();
+        }
+      };
+
+      const onOpenEventEditButtonClick = () => {
+        replaceEventToEdit();
+        document.addEventListener(`keydown`, onEscKeyDown);
       };
 
       const onEventEditElementSubmit = (evt) => {
         evt.preventDefault();
-        tripEventsList.replaceChild(eventElement, eventEditElement);
+        replaceEditToEvent();
+        removeOnEscKeyDownHandler();
       };
 
       const onCloseEventEditButtonClick = () => {
-        tripEventsList.replaceChild(eventElement, eventEditElement);
+        replaceEditToEvent();
+        removeOnEscKeyDownHandler();
       };
 
       openEventEditButton.addEventListener(`click`, onOpenEventEditButtonClick);
