@@ -1,23 +1,8 @@
-import {createElement} from "../utils.js";
+import AbstractComponent from "./abstract-component.js";
 import {createNavTemplate} from "../templates/nav.js";
 
-export default class Nav {
-  constructor() {
-    this._element = null;
-  }
-
+export default class Nav extends AbstractComponent {
   getTemplate() {
     return createNavTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

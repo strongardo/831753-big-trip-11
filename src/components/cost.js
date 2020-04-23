@@ -1,24 +1,14 @@
-import {createElement} from "../utils.js";
+import AbstractComponent from "./abstract-component.js";
 import {createCostTemplate} from "../templates/cost.js";
 
-export default class Cost {
+export default class Cost extends AbstractComponent {
   constructor(events) {
+    super();
+
     this._events = events;
-    this._element = null;
   }
 
   getTemplate() {
     return createCostTemplate(this._events);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

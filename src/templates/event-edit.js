@@ -1,5 +1,5 @@
 import {TRANSFER_TYPES, ACTIVITY_TYPES} from "../const.js";
-import {changeFormat} from "../utils.js";
+import {changeFormat} from "../utils/common.js";
 
 const createTimeMarkup = (time) => {
 
