@@ -1,24 +1,22 @@
-import {createElement} from "../utils.js";
+import AbstractComponent from "./abstract-component.js";
 import {createEventEditTemplate} from "../templates/event-edit.js";
 
-export default class EventEdit {
+export default class EventEdit extends AbstractComponent {
   constructor(event) {
+    super();
+
     this._event = event;
-    this._element = null;
   }
 
   getTemplate() {
     return createEventEditTemplate(this._event);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
+  setFormSubmitHandler(cb) {
+    this.getElement().addEventListener(`submit`, cb);
   }
 
-  removeElement() {
-    this._element = null;
+  setCancelButtonClickHandler(cb) {
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, cb);
   }
 }

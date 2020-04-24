@@ -1,5 +1,5 @@
 import {TYPES, START_INDEX_FOR_ACTIVITY_TYPES, START_INDEX_FOR_OFFERS, LAST_INDEX_FOR_OFFERS} from "../const.js";
-import {changeFormat, changeTimeFormat} from "../utils.js";
+import {changeFormat, changeTimeFormat} from "../utils/common.js";
 
 const getHeadingPretext = (type) => {
   const isCurrentElement = (it) => {
