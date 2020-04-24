@@ -5,16 +5,21 @@ import FilterComponent from "../components/filter.js";
 import {render} from "../utils/dom.js";
 
 export default class HeaderController {
-  constructor(container, events) {
+  constructor(container) {
     this._container = container;
 
+    this._infoComponent = null;
+    this._costComponent = null;
+    this._navComponent = null;
+    this._filterComponent = null;
+  }
+
+  render(events) {
     this._infoComponent = new InfoComponent(events);
     this._costComponent = new CostComponent(events);
     this._navComponent = new NavComponent();
     this._filterComponent = new FilterComponent();
-  }
 
-  render() {
     render(this._container, this._infoComponent, `afterbegin`);
 
     const tripInfo = this._container.querySelector(`.trip-info`);

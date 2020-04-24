@@ -9,5 +9,5 @@ const tripEvents = document.querySelector(`.trip-events`);
 const header = new HeaderController(tripMain, events);
 const content = new ContentController(tripEvents);
 
-header.render();
+header.render(events);
 content.render(events);
