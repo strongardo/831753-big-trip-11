@@ -12,3 +12,9 @@ export const MONTHS = [`JAN`, `FEB`, `MAR`, `APR`, `MAY`, `JUN`, `JUL`, `AUG`, `
 export const TYPES = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`, `Check-in`, `Sightseeing`, `Restaurant`];
 export const TRANSFER_TYPES = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`];
 export const ACTIVITY_TYPES = [`check-in`, `sightseeing`, `restaurant`];
+
+export const SortType = {
+  TIME: `time`,
+  PRICE: `price`,
+  DEFAULT: `default`,
+};
