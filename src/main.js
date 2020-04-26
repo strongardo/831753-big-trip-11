@@ -6,7 +6,7 @@ const events = generateEvents();
 const tripMain = document.querySelector(`.trip-main`);
 const tripEvents = document.querySelector(`.trip-events`);
 
-const header = new HeaderController(tripMain, events);
+const header = new HeaderController(tripMain);
 const content = new ContentController(tripEvents);
 
 header.render(events);
