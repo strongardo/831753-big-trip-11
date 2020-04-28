@@ -113,6 +113,7 @@ export const generateEvents = () => {
       startTime: it.startTime,
       finishTime: it.endTime,
       price: getRandomIntegerNumber(0, 10000),
+      isFavorite: false,
 
       offers: offers.slice(getRandomIntegerNumber(0, 5)),
 

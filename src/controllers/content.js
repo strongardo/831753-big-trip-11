@@ -1,12 +1,11 @@
 import {START_INDEX_FOR_EVENTS} from "../const.js";
 import {SortType} from "../const.js";
+import PointController from "./point-controller.js";
 import SortComponent from "../components/sort.js";
-import EventEditComponent from "../components/event-edit.js";
 import DaysListComponent from "../components/days-list.js";
 import DayComponent from "../components/day.js";
-import EventComponent from "../components/event.js";
 import NoEventsComponent from "../components/no-events.js";
-import {render, replace} from "../utils/dom.js";
+import {render} from "../utils/dom.js";
 
 export default class ContentController {
   constructor(container) {
@@ -14,9 +13,28 @@ export default class ContentController {
     this._daysContainer = null;
     this._events = null;
 
+    this._onDataChange = this._onDataChange.bind(this);
+
     this._noEventsComponent = new NoEventsComponent();
     this._sortComponent = new SortComponent();
     this._daysListComponent = new DaysListComponent();
+  }
+
+  render(events) {
+    this._events = events;
+
+    if (!this._events.length) {
+      render(this._container, this._noEventsComponent, `beforeend`);
+      return;
+    }
+
+    this._renderSort();
+
+    render(this._container, this._daysListComponent, `beforeend`);
+
+    this._daysContainer = this._container.querySelector(`.trip-days`);
+    this._renderDays();
+
   }
 
   _getDays(events) {
@@ -39,60 +57,13 @@ export default class ContentController {
     });
   }
 
-  _renderEvent(event, container) {
-    const eventComponent = new EventComponent(event);
-    const eventEditComponent = new EventEditComponent(event);
-
-    const replaceEventToEdit = () => {
-      replace(eventEditComponent, eventComponent);
-    };
-
-    const replaceEditToEvent = () => {
-      replace(eventComponent, eventEditComponent);
-    };
-
-    const removeOnEscKeyDownHandler = () => {
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    };
-
-    const onEscKeyDown = (evt) => {
-      const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-
-      if (isEscKey) {
-        replaceEditToEvent();
-        removeOnEscKeyDownHandler();
-      }
-    };
-
-    const onSetEditButtonClick = () => {
-      replaceEventToEdit();
-      document.addEventListener(`keydown`, onEscKeyDown);
-    };
-
-    const onFormSubmit = (evt) => {
-      evt.preventDefault();
-      replaceEditToEvent();
-      removeOnEscKeyDownHandler();
-    };
-
-    const onCancelButtonClick = () => {
-      replaceEditToEvent();
-      removeOnEscKeyDownHandler();
-    };
-
-    eventComponent.setEditButtonClickHandler(onSetEditButtonClick);
-    eventEditComponent.setFormSubmitHandler(onFormSubmit);
-    eventEditComponent.setCancelButtonClickHandler(onCancelButtonClick);
-
-    render(container, eventComponent, `beforeend`);
-  }
-
   _renderDay(dayComponent, events) {
     render(this._daysContainer, dayComponent, `beforeend`);
     const day = dayComponent.getElement();
     const tripEventsList = day.querySelector(`.trip-events__list`);
     events.forEach((event) => {
-      this._renderEvent(event, tripEventsList);
+      const pointController = new PointController(tripEventsList, this._onDataChange);
+      pointController.render(event);
     });
   }
 
@@ -126,10 +97,12 @@ export default class ContentController {
 
   _renderSort() {
     const inputs = this._sortComponent.getElement().querySelectorAll(`.trip-sort__input`);
+
     inputs.forEach((input) => {
       this._sortComponent.setSortTypeChangeHandler(input, () => {
         this._daysContainer.innerHTML = ``;
         const sortType = input.dataset.sortType;
+
         if (sortType === SortType.DEFAULT) {
           this._renderDays();
         } else {
@@ -143,18 +116,15 @@ export default class ContentController {
     render(this._container, this._sortComponent, `beforeend`);
   }
 
-  render(events) {
-    this._events = events;
+  _onDataChange(controller, oldData, newData) {
+    const index = this._events.findIndex((it) => it === oldData);
 
-    if (this._events.length) {
-      this._renderSort();
-
-      render(this._container, this._daysListComponent, `beforeend`);
-
-      this._daysContainer = this._container.querySelector(`.trip-days`);
-      this._renderDays();
-    } else {
-      render(this._container, this._noEventsComponent, `beforeend`);
+    if (index === -1) {
+      return;
     }
+
+    this._events = [].concat(this._events.slice(0, index), newData, this._events.slice(index + 1));
+
+    controller.render(this._events[index]);
   }
 }

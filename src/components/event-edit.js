@@ -1,7 +1,7 @@
-import AbstractComponent from "./abstract-component.js";
+import AbstractSmartComponent from "./abstract-smart-component.js";
 import {createEventEditTemplate} from "../templates/event-edit.js";
 
-export default class EventEdit extends AbstractComponent {
+export default class EventEdit extends AbstractSmartComponent {
   constructor(event) {
     super();
 
@@ -16,7 +16,15 @@ export default class EventEdit extends AbstractComponent {
     this.getElement().addEventListener(`submit`, cb);
   }
 
-  setCancelButtonClickHandler(cb) {
-    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, cb);
+  setCloseButtonClickHandler(cb) {
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, cb);
+  }
+
+  setFavoriteChangeHandler(cb) {
+    this.getElement().querySelector(`#event-favorite-1`).addEventListener(`change`, cb);
+  }
+
+  recoveryListeners() {
+
   }
 }
