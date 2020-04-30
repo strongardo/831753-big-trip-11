@@ -13,11 +13,12 @@ export default class ContentController {
     this._daysContainer = null;
     this._events = null;
 
-    this._onDataChange = this._onDataChange.bind(this);
-
     this._noEventsComponent = new NoEventsComponent();
     this._sortComponent = new SortComponent();
     this._daysListComponent = new DaysListComponent();
+
+    this._observer = [];
+    this._closeAllForms = this._closeAllForms.bind(this);
   }
 
   render(events) {
@@ -62,8 +63,9 @@ export default class ContentController {
     const day = dayComponent.getElement();
     const tripEventsList = day.querySelector(`.trip-events__list`);
     events.forEach((event) => {
-      const pointController = new PointController(tripEventsList, this._onDataChange);
-      pointController.render(event);
+      const pointController = new PointController(tripEventsList, event, this._closeAllForms);
+      this._observer.push(pointController);
+      pointController.render();
     });
   }
 
@@ -116,15 +118,9 @@ export default class ContentController {
     render(this._container, this._sortComponent, `beforeend`);
   }
 
-  _onDataChange(controller, oldData, newData) {
-    const index = this._events.findIndex((it) => it === oldData);
-
-    if (index === -1) {
-      return;
-    }
-
-    this._events = [].concat(this._events.slice(0, index), newData, this._events.slice(index + 1));
-
-    controller.render(this._events[index]);
+  _closeAllForms() {
+    this._observer.forEach((pointController) => {
+      pointController.eventRender();
+    });
   }
 }

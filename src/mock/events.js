@@ -12,7 +12,7 @@ const getRandomArrayItem = (array) => {
 
 const sliceRandomArray = (array, elements) => {
   const limiter1 = getRandomIntegerNumber(0, array.length - elements);
-  const limiter2 = getRandomIntegerNumber(limiter1, limiter1 + elements);
+  const limiter2 = getRandomIntegerNumber(limiter1 + 1, limiter1 + elements - 1);
   return array.slice(limiter1, limiter2);
 };
 
@@ -34,7 +34,7 @@ const getRandomDate = (duringDate = new Date()) => {
 };
 
 
-export const types = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`, `Check-in`, `Sightseeing`, `Restaurant`];
+export const types = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`, `check-in`, `sightseeing`, `restaurant`];
 const cities = [`New York`, `Los Angeles`, `Chicago`, `Houston`, `Phoenix`, `Philadelphia`, `San Antonio`, `San Diego`, `Dallas`, `San Jose`, `Austin`, `Jacksonville`, `Fort Worth`, `Columbus`, `San Francisco`, `Charlotte`, `Indianapolis`, `Seattle`, `Denver`, `Washington`];
 const offers = [
   {
@@ -105,23 +105,35 @@ const createTimes = () => {
 export const generateEvents = () => {
   return createTimes().map((it) => {
 
+    const someCities = sliceRandomArray(cities, 4);
+
+    const destinations = someCities.map((item) => {
+      return {
+        city: item,
+        info: {
+          description: sliceRandomArray(descriptions, 5).join(` `),
+          pictures: generateRandomArray(1, 10, DESCRIPTION_PICTURES_URL),
+        },
+      };
+    });
+
+    const tripTypes = types.map((item) => {
+      return {
+        name: item,
+        offers: offers.slice(getRandomIntegerNumber(0, 5)),
+      };
+    });
+
     return {
-      type: getRandomArrayItem(types),
-      destination: getRandomArrayItem(cities),
-      someSities: sliceRandomArray(cities, 4),
+      types: tripTypes,
+      type: getRandomArrayItem(tripTypes),
+      destinations,
+      destination: getRandomArrayItem(destinations),
       duration: it.duration,
       startTime: it.startTime,
       finishTime: it.endTime,
-      price: getRandomIntegerNumber(0, 10000),
+      price: getRandomIntegerNumber(0, 1000),
       isFavorite: false,
-
-      offers: offers.slice(getRandomIntegerNumber(0, 5)),
-
-      info: {
-        description: sliceRandomArray(descriptions, 5).join(` `),
-        pictures: generateRandomArray(1, 10, DESCRIPTION_PICTURES_URL),
-      },
-
     };
   });
 };

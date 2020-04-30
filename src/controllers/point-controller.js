@@ -2,13 +2,13 @@ import EventComponent from "../components/event.js";
 import EventEditComponent from "../components/event-edit.js";
 import {render, replace} from "../utils/dom.js";
 
-
 export default class PointController {
-  constructor(container, onDataChange) {
+  constructor(container, event, closeOtherForms) {
     this._container = container;
-    this._onDataChange = onDataChange;
+    this._event = event;
+    this._closeOtherForms = closeOtherForms;
 
-    this._event = null;
+    this._isIventOpened = true;
 
     this._eventComponent = null;
     this._eventEditComponent = null;
@@ -18,20 +18,39 @@ export default class PointController {
     this._onFormSubmit = this._onFormSubmit.bind(this);
     this._onCloseButtonClick = this._onCloseButtonClick.bind(this);
     this._onFavoriteChange = this._onFavoriteChange.bind(this);
+    this._onTypeChange = this._onTypeChange.bind(this);
+    this._onCityChange = this._onCityChange.bind(this);
   }
 
-  render(event) {
-    this._event = event;
-
-    this._eventComponent = new EventComponent(event);
-    this._eventEditComponent = new EventEditComponent(event);
-
-    this._eventComponent.setEditButtonClickHandler(this._onEditButtonClick);
-    this._eventEditComponent.setFormSubmitHandler(this._onFormSubmit);
-    this._eventEditComponent.setCloseButtonClickHandler(this._onCloseButtonClick);
-    this._eventEditComponent.setFavoriteChangeHandler(this._onFavoriteChange);
-
+  render() {
+    this._getEventComponent();
     render(this._container, this._eventComponent, `beforeend`);
+  }
+
+  eventRender() {
+    if (!this._isIventOpened) {
+      this._getEventComponent();
+      this._replaceEditToEvent();
+      this._isIventOpened = true;
+    }
+  }
+
+  _getEventComponent() {
+    this._eventComponent = new EventComponent(this._event);
+    this._eventComponent.setEditButtonClickHandler(this._onEditButtonClick);
+  }
+
+  _formRender() {
+    const oldEventEditComponent = this._eventEditComponent;
+    this._eventEditComponent = new EventEditComponent(this._event);
+
+    if (this._isIventOpened) {
+      this._replaceEventToEdit();
+      this._isIventOpened = false;
+    } else {
+      replace(this._eventEditComponent, oldEventEditComponent);
+    }
+    this._addFormHandlers();
   }
 
   _replaceEventToEdit() {
@@ -50,33 +69,56 @@ export default class PointController {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
 
     if (isEscKey) {
-      this._replaceEditToEvent();
+      this.eventRender();
       this._removeOnEscKeyDownHandler();
     }
   }
 
   _onEditButtonClick() {
-    this._replaceEventToEdit();
+    this._closeOtherForms();
+    this._formRender();
     document.addEventListener(`keydown`, this._onEscKeyDown);
   }
 
   _onFormSubmit(evt) {
     evt.preventDefault();
-    this._replaceEditToEvent();
+    this.eventRender();
     this._removeOnEscKeyDownHandler();
   }
 
   _onCloseButtonClick() {
-    this._replaceEditToEvent();
+    this.eventRender();
     this._removeOnEscKeyDownHandler();
   }
 
   _onFavoriteChange() {
-    const newEvent = Object.assign({}, this._event, {isFavorite: !this._event.isFavorite});
-    this._onDataChange(this, this._event, newEvent);
-    this._eventEditComponent.rerender();
+    this._event = Object.assign({}, this._event, {isFavorite: !this._event.isFavorite});
+    this._formRender();
+  }
+
+  _onTypeChange(tripType) {
+    const newType = this._event.types.find((it) => {
+      return it.name === tripType;
+    });
+    this._event = Object.assign({}, this._event, {type: newType});
+    this._formRender();
+  }
+
+  _onCityChange(pointDestination) {
+    const newDestination = this._event.destinations.find((it) => {
+      return it.city === pointDestination;
+    });
+    this._event = Object.assign({}, this._event, {destination: newDestination});
+    this._formRender();
+  }
+
+  _addFormHandlers() {
+    this._eventEditComponent.setFormSubmitHandler(this._onFormSubmit);
+    this._eventEditComponent.setCloseButtonClickHandler(this._onCloseButtonClick);
+    this._eventEditComponent.setFavoriteChangeHandler(this._onFavoriteChange);
+    this._eventEditComponent.setTypeChangeHandler(this._onTypeChange);
+    this._eventEditComponent.setCityChangeHandler(this._onCityChange);
   }
 
 }
-
 

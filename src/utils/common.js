@@ -1,3 +1,5 @@
+import {TYPES, START_INDEX_FOR_ACTIVITY_TYPES} from "../const.js";
+
 export const RenderPosition = {
   AFTERBEGIN: `afterbegin`,
   BEFOREEND: `beforeend`
@@ -21,4 +23,15 @@ export const changeTimeFormat = (value) => {
   } else {
     return `${changeFormat(value)}M`;
   }
+};
+
+export const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
+export const getHeadingPretext = (type) => {
+  const isCurrentElement = (it) => {
+    return it === type;
+  };
+  return (TYPES.findIndex(isCurrentElement) < START_INDEX_FOR_ACTIVITY_TYPES) ? `to` : `in`;
 };

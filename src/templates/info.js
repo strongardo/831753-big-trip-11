@@ -3,9 +3,9 @@ import {MONTHS, INDEX_FOR_FIRST_EVENT, INDEX_FOR_SECOND_EVENT, CITIES_FOR_INFO_Q
 export const createInfoTemplate = (events) => {
   if (events.length) {
     const getCities = () => {
-      const firstCity = events[INDEX_FOR_FIRST_EVENT].destination;
-      const secondCity = events[INDEX_FOR_SECOND_EVENT].destination;
-      const lastCity = events[events.length - 1].destination;
+      const firstCity = events[INDEX_FOR_FIRST_EVENT].destination.city;
+      const secondCity = events[INDEX_FOR_SECOND_EVENT].destination.city;
+      const lastCity = events[events.length - 1].destination.city;
 
       if (events.length > CITIES_FOR_INFO_QUANTITY) {
         return `${firstCity} — … — ${lastCity}`;
