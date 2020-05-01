@@ -37,7 +37,10 @@ export const createEventTemplate = (event) => {
   const destination = event.destination.city;
   const startTimeMarkup = createTimeMarkup(event.startTime);
   const finishTimeMarkup = createTimeMarkup(event.finishTime);
+  // const startTime = event.startTime;
+  // const finishTime = event.finishTime;
   const duration = changeTimeFormat(event.duration);
+  // const duration = changeTimeFormat(finishTime - startTime);
   const price = event.price;
   const offersMarkup = createOffersMarkup(event.type.offers);
 
