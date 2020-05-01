@@ -1,12 +1,5 @@
-import {TYPES, START_INDEX_FOR_ACTIVITY_TYPES, START_INDEX_FOR_OFFERS, LAST_INDEX_FOR_OFFERS} from "../const.js";
-import {changeFormat, changeTimeFormat} from "../utils/common.js";
-
-const getHeadingPretext = (type) => {
-  const isCurrentElement = (it) => {
-    return it === type;
-  };
-  return (TYPES.findIndex(isCurrentElement) < START_INDEX_FOR_ACTIVITY_TYPES) ? `to` : `in`;
-};
+import {START_INDEX_FOR_OFFERS, LAST_INDEX_FOR_OFFERS} from "../const.js";
+import {changeFormat, changeTimeFormat, capitalizeFirstLetter, getHeadingPretext} from "../utils/common.js";
 
 const createTimeMarkup = (time) => {
   const hour = changeFormat(time.getHours());
@@ -38,14 +31,15 @@ const createOffersMarkup = (offers) => {
 
 export const createEventTemplate = (event) => {
 
-  const type = event.type;
+  const type = event.type.name;
+  const capitalizeFirstLetterType = capitalizeFirstLetter(type);
   const headingPretext = getHeadingPretext(type);
-  const destination = event.destination;
+  const destination = event.destination.city;
   const startTimeMarkup = createTimeMarkup(event.startTime);
   const finishTimeMarkup = createTimeMarkup(event.finishTime);
   const duration = changeTimeFormat(event.duration);
   const price = event.price;
-  const offersMarkup = createOffersMarkup(event.offers);
+  const offersMarkup = createOffersMarkup(event.type.offers);
 
   return (
     `<li class="trip-events__item">
@@ -53,7 +47,7 @@ export const createEventTemplate = (event) => {
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="${type}">
       </div>
-      <h3 class="event__title">${type} ${headingPretext} ${destination}</h3>
+      <h3 class="event__title">${capitalizeFirstLetterType} ${headingPretext} ${destination}</h3>
 
       <div class="event__schedule">
         <p class="event__time">

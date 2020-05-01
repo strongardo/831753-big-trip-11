@@ -16,7 +16,40 @@ export default class EventEdit extends AbstractComponent {
     this.getElement().addEventListener(`submit`, cb);
   }
 
-  setCancelButtonClickHandler(cb) {
-    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, cb);
+  setCloseButtonClickHandler(cb) {
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, cb);
+  }
+
+  setFavoriteChangeHandler(cb) {
+    this.getElement().querySelector(`#event-favorite-1`).addEventListener(`change`, cb);
+  }
+
+  setCityChangeHandler(cb) {
+    this.getElement().querySelector(`#event-destination-1`).addEventListener(`change`, (evt) => {
+
+      const pointDestination = evt.target.value;
+
+      if (this._event.destination === pointDestination) {
+        return;
+      }
+
+      cb(pointDestination);
+    });
+  }
+
+  setTypeChangeHandler(cb) {
+    this.getElement().addEventListener(`change`, (evt) => {
+      if (!evt.target.classList.contains(`event__type-input`)) {
+        return;
+      }
+
+      const tripType = evt.target.value;
+
+      if (this._event.type.name === tripType) {
+        return;
+      }
+
+      cb(tripType);
+    });
   }
 }

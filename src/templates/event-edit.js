@@ -1,5 +1,9 @@
 import {TRANSFER_TYPES, ACTIVITY_TYPES} from "../const.js";
-import {changeFormat} from "../utils/common.js";
+import {changeFormat, capitalizeFirstLetter, getHeadingPretext} from "../utils/common.js";
+
+const getFavoritecheckBoxCondition = (isFavorite) => {
+  return (isFavorite) ? `checked` : ``;
+};
 
 const createTimeMarkup = (time) => {
 
@@ -64,9 +68,9 @@ const createPhotosMarkup = (array) => {
 export const createEventEditTemplate = (event) => {
 
   const createOffersContainerMarkup = () => {
-    if (event.offers.length) {
+    if (event.type.offers.length) {
 
-      const offersMarkup = createOffersMarkup(event.offers);
+      const offersMarkup = createOffersMarkup(event.type.offers);
 
       return (
         `<section class="event__section  event__section--offers">
@@ -81,13 +85,19 @@ export const createEventEditTemplate = (event) => {
     }
   };
 
-  const type = event.type;
+  const type = event.type.name;
+  const capitalizeFirstLetterType = capitalizeFirstLetter(type);
+  const headingPretext = getHeadingPretext(type);
+  const destination = event.destination.city;
   const transferTypesMarkup = createTypesMarkup(TRANSFER_TYPES);
   const activityTypesMarkup = createTypesMarkup(ACTIVITY_TYPES);
-  const citiesOptionsMarkup = createCitiesOptionsMarkup(event.someSities);
+  const someCities = event.destinations.map((it) => {
+    return it.city;
+  });
+  const citiesOptionsMarkup = createCitiesOptionsMarkup(someCities);
   const offersContainerMarkup = createOffersContainerMarkup();
-  const description = event.info.description;
-  const photosMarkup = createPhotosMarkup(event.info.pictures);
+  const description = event.destination.info.description;
+  const photosMarkup = createPhotosMarkup(event.destination.info.pictures);
 
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -114,9 +124,9 @@ export const createEventEditTemplate = (event) => {
 
       <div class="event__field-group  event__field-group--destination">
         <label class="event__label  event__type-output" for="event-destination-1">
-          Bus to
+          ${capitalizeFirstLetterType} ${headingPretext}
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="" list="destination-list-1">
+        <input id="event-destination-1" class="event__input  event__input--destination" name="event-destination" list="destination-list-1" value="${destination}">
         <datalist id="destination-list-1">
           ${citiesOptionsMarkup}
         </datalist>
@@ -143,7 +153,19 @@ export const createEventEditTemplate = (event) => {
       </div>
 
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-      <button class="event__reset-btn" type="reset">Cancel</button>
+      <button class="event__reset-btn" type="reset">Delete</button>
+
+      <input id="event-favorite-1" class="event__favorite-checkbox visually-hidden" type="checkbox" name="event-favorite" ${getFavoritecheckBoxCondition(event.isFavorite)}>
+      <label class="event__favorite-btn" for="event-favorite-1">
+        <span class="visually-hidden">Add to favorite</span>
+        <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
+          <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
+        </svg>
+      </label>
+
+      <button class="event__rollup-btn" type="button">
+        <span class="visually-hidden">Open event</span>
+      </button>
     </header>
 
     <section class="event__details">
