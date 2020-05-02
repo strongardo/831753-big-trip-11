@@ -125,6 +125,7 @@ export const generateEvents = () => {
     });
 
     return {
+      id: String(new Date() + Math.random()),
       types: tripTypes,
       type: getRandomArrayItem(tripTypes),
       destinations,

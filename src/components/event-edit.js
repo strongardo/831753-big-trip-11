@@ -1,15 +1,43 @@
 import AbstractComponent from "./abstract-component.js";
 import {createEventEditTemplate} from "../templates/event-edit.js";
+import flatpickr from "flatpickr";
+import "flatpickr/dist/flatpickr.min.css";
 
 export default class EventEdit extends AbstractComponent {
   constructor(event) {
     super();
 
     this._event = event;
+
+    this._flatpickrStart = null;
+    this._flatpickrEnd = null;
+    this._applyFlatpickrs();
   }
 
   getTemplate() {
     return createEventEditTemplate(this._event);
+  }
+
+  _applyFlatpickrs() {
+    if (this._flatpickrStart) {
+      this._flatpickrStart.destroy();
+      this._flatpickrStart = null;
+      this._flatpickrEnd.destroy();
+      this._flatpickrEnd = null;
+    }
+
+    const dateStartElement = this.getElement().querySelector(`#event-start-time-1`);
+    const dateEndElement = this.getElement().querySelector(`#event-end-time-1`);
+    this.flatpickrStart = flatpickr(dateStartElement, {
+      altInput: true,
+      allowInput: true,
+      defaultDate: this._event.startTime || `today`,
+    });
+    this.flatpickrEnd = flatpickr(dateEndElement, {
+      altInput: true,
+      allowInput: true,
+      defaultDate: this._event.finishTime || `today`,
+    });
   }
 
   setFormSubmitHandler(cb) {

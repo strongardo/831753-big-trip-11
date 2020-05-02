@@ -8,10 +8,11 @@ import NoEventsComponent from "../components/no-events.js";
 import {render} from "../utils/dom.js";
 
 export default class ContentController {
-  constructor(container) {
+  constructor(container, eventsModel) {
     this._container = container;
+    this._eventsModel = eventsModel;
+
     this._daysContainer = null;
-    this._events = null;
 
     this._noEventsComponent = new NoEventsComponent();
     this._sortComponent = new SortComponent();
@@ -21,10 +22,10 @@ export default class ContentController {
     this._closeAllForms = this._closeAllForms.bind(this);
   }
 
-  render(events) {
-    this._events = events;
+  render() {
+    const events = this._eventsModel.getEvents();
 
-    if (!this._events.length) {
+    if (!events.length) {
       render(this._container, this._noEventsComponent, `beforeend`);
       return;
     }
@@ -53,7 +54,8 @@ export default class ContentController {
   }
 
   _getCurrentEvents(day) {
-    return this._events.filter((item) => {
+    const events = this._eventsModel.getEvents();
+    return events.filter((item) => {
       return item.startTime.getDate() === day.getDate();
     });
   }
@@ -71,7 +73,7 @@ export default class ContentController {
 
   _getSortedEvents(sortType) {
     let sortedEvents = [];
-    const events = this._events.slice();
+    const events = this._eventsModel.getEvents().slice();
 
     switch (sortType) {
       case SortType.TIME:
@@ -89,7 +91,8 @@ export default class ContentController {
   }
 
   _renderDays() {
-    const days = this._getDays(this._events);
+    const events = this._eventsModel.getEvents();
+    const days = this._getDays(events);
     days.forEach((day, i) => {
       const dayComponent = new DayComponent(i + 1, day); // Номер дня не может быть нулем, поэтому +1
       const currentEvents = this._getCurrentEvents(day);

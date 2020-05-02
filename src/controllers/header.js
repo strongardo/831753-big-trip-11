@@ -5,8 +5,9 @@ import FilterComponent from "../components/filter.js";
 import {render} from "../utils/dom.js";
 
 export default class HeaderController {
-  constructor(container) {
+  constructor(container, model) {
     this._container = container;
+    this._events = model.getEvents();
 
     this._infoComponent = null;
     this._costComponent = null;
@@ -14,9 +15,9 @@ export default class HeaderController {
     this._filterComponent = null;
   }
 
-  render(events) {
-    this._infoComponent = new InfoComponent(events);
-    this._costComponent = new CostComponent(events);
+  render() {
+    this._infoComponent = new InfoComponent(this._events);
+    this._costComponent = new CostComponent(this._events);
     this._navComponent = new NavComponent();
     this._filterComponent = new FilterComponent();
 
