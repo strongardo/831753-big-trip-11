@@ -1,5 +1,3 @@
-const DESCRIPTION_PICTURES_URL = `http://picsum.photos/248/152`;
-
 const getRandomIntegerNumber = (min, max) => {
   return min + Math.floor(Math.random() * (max - min));
 };
@@ -16,53 +14,45 @@ const sliceRandomArray = (array, elements) => {
   return array.slice(limiter1, limiter2);
 };
 
-const generateRandomArray = (min, max, filler) => {
-  const randomArray = [];
-  const numberOfElements = getRandomIntegerNumber(min, max);
-  for (let i = 0; i < numberOfElements; i++) {
-    randomArray.push(filler);
-  }
-  return randomArray;
-};
+// const generateRandomArray = (min, max, filler) => {
+//   const randomArray = [];
+//   const numberOfElements = getRandomIntegerNumber(min, max);
+//   for (let i = 0; i < numberOfElements; i++) {
+//     randomArray.push(filler);
+//   }
+//   return randomArray;
+// };
 
-const getRandomDate = (duringDate = new Date()) => {
-  const diffValue = getRandomIntegerNumber(0, 8);
-
-  duringDate.setDate(duringDate.getDate() + diffValue);
-
-  return duringDate;
-};
-
-
-export const types = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`, `check-in`, `sightseeing`, `restaurant`];
+const types = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`, `check-in`, `sightseeing`, `restaurant`];
 const cities = [`New York`, `Los Angeles`, `Chicago`, `Houston`, `Phoenix`, `Philadelphia`, `San Antonio`, `San Diego`, `Dallas`, `San Jose`, `Austin`, `Jacksonville`, `Fort Worth`, `Columbus`, `San Francisco`, `Charlotte`, `Indianapolis`, `Seattle`, `Denver`, `Washington`];
-const offers = [
-  {
-    type: `car`,
-    name: `Rent a car`,
-    price: 40,
-  },
-  {
-    type: `tickets`,
-    name: `Book tickets`,
-    price: 120,
-  },
-  {
-    type: `luggage`,
-    name: `Add luggage`,
-    price: 5,
-  },
-  {
-    type: `comfort`,
-    name: `Switch to comfort`,
-    price: 50,
-  },
-  {
-    type: `uber`,
-    name: `Order Uber`,
-    price: 50,
-  },
-];
+
+// const offers = [
+//   {
+//     type: `car`,
+//     name: `Rent a car`,
+//     price: 40,
+//   },
+//   {
+//     type: `tickets`,
+//     name: `Book tickets`,
+//     price: 120,
+//   },
+//   {
+//     type: `luggage`,
+//     name: `Add luggage`,
+//     price: 5,
+//   },
+//   {
+//     type: `comfort`,
+//     name: `Switch to comfort`,
+//     price: 50,
+//   },
+//   {
+//     type: `uber`,
+//     name: `Order Uber`,
+//     price: 50,
+//   },
+// ];
 
 const descriptions = [`Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
   `Cras aliquet varius magna, non porta ligula feugiat eget.`,
@@ -76,67 +66,74 @@ const descriptions = [`Lorem ipsum dolor sit amet, consectetur adipiscing elit.`
   `Nunc fermentum tortor ac porta dapibus.`,
   `In rutrum ac purus sit amet tempus].`];
 
-const generateDurations = () => {
-  const durations = [];
-  const numberOfElements = getRandomIntegerNumber(15, 20);
-  for (let i = 0; i < numberOfElements; i++) {
-    durations.push(getRandomIntegerNumber(1, 2500));
+const getDateFrom = () => {
+  const date = new Date();
+  const diffValue = getRandomIntegerNumber(10, 2880);
+
+  const diceNumber = getRandomIntegerNumber(0, 10);
+
+  if (diceNumber < 5) {
+    date.setMinutes(date.getMinutes() - diffValue);
+  } else {
+    date.setMinutes(date.getMinutes() + diffValue);
   }
-  return durations;
+
+  return date;
 };
 
-const createTimes = () => {
-  let startTime = getRandomDate();
-  let endTime = null;
+const getDateTo = (dateFrom) => {
+  const date = new Date(dateFrom);
+  const diffValue = getRandomIntegerNumber(10, 2880);
+  date.setMinutes(date.getMinutes() + diffValue);
+  return date;
+};
 
-  return generateDurations().map((it, i) => {
-    startTime = (i !== 0) ? new Date(endTime) : startTime;
-    endTime = new Date(startTime);
-    endTime.setMinutes(endTime.getMinutes() + it);
-
-    return {
-      duration: it,
-      startTime,
-      endTime,
-    };
-  });
+const getPictures = () => {
+  const pictures = [];
+  for (let i = 0; i < getRandomIntegerNumber(1, 10); i++) {
+    pictures.push(
+        {
+          "src": `https://picsum.photos/200`,
+          "description": sliceRandomArray(descriptions, 2).join(` `),
+        }
+    );
+  }
+  return pictures;
 };
 
 export const generateEvents = () => {
-  return createTimes().map((it) => {
+  const events = cities.map((item, index) => {
 
-    const someCities = sliceRandomArray(cities, 4);
-
-    const destinations = someCities.map((item) => {
-      return {
-        city: item,
-        info: {
-          description: sliceRandomArray(descriptions, 5).join(` `),
-          pictures: generateRandomArray(1, 10, DESCRIPTION_PICTURES_URL),
-        },
-      };
-    });
-
-    const tripTypes = types.map((item) => {
-      return {
-        name: item,
-        offers: offers.slice(getRandomIntegerNumber(0, 5)),
-      };
-    });
+    const dateFrom = getDateFrom();
+    const dateTo = getDateTo(dateFrom);
 
     return {
-      id: String(new Date() + Math.random()),
-      types: tripTypes,
-      type: getRandomArrayItem(tripTypes),
-      destinations,
-      destination: getRandomArrayItem(destinations),
-      duration: it.duration,
-      startTime: it.startTime,
-      finishTime: it.endTime,
-      price: getRandomIntegerNumber(0, 1000),
-      isFavorite: false,
+      "base_price": getRandomIntegerNumber(0, 1000),
+      "date_from": dateFrom,
+      "date_to": dateTo,
+      "destination": {
+        "description": sliceRandomArray(descriptions, 5).join(` `),
+        "name": item,
+        "pictures": getPictures(),
+      },
+      "id": index,
+      "is_favorite": false,
+      "offers": [
+        {
+          "title": `Choose meal`,
+          "price": 180
+        }, {
+          "title": `Upgrade to comfort class`,
+          "price": 50
+        }
+      ],
+      "type": getRandomArrayItem(types),
     };
   });
+
+
+  return events.sort((a, b) => a.date_from - b.date_from); // от меньшего к большему
+
 };
 
 

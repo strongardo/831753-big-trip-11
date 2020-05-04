@@ -29,14 +29,18 @@ export default class EventEdit extends AbstractComponent {
     const dateStartElement = this.getElement().querySelector(`#event-start-time-1`);
     const dateEndElement = this.getElement().querySelector(`#event-end-time-1`);
     this.flatpickrStart = flatpickr(dateStartElement, {
-      altInput: true,
-      allowInput: true,
-      defaultDate: this._event.startTime || `today`,
+      altInput: false,
+      allowInput: false,
+      defaultDate: this._event.date_from || `today`,
+      enableTime: true,
+      dateFormat: `d/m/y H:i`,
     });
     this.flatpickrEnd = flatpickr(dateEndElement, {
-      altInput: true,
-      allowInput: true,
-      defaultDate: this._event.finishTime || `today`,
+      altInput: false,
+      allowInput: false,
+      defaultDate: this._event.date_to || `today`,
+      enableTime: true,
+      dateFormat: `d/m/y H:i`,
     });
   }
 

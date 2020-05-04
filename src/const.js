@@ -18,3 +18,9 @@ export const SortType = {
   PRICE: `price`,
   DEFAULT: `default`,
 };
+
+export const FilterType = {
+  FUTURE: `future`,
+  PAST: `past`,
+  DEFAULT: `default`,
+};

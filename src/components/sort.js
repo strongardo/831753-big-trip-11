@@ -28,7 +28,7 @@ export default class Sort extends AbstractComponent {
 
       this._currenSortType = sortType;
 
-      handler();
+      handler(sortType);
     });
   }
 }

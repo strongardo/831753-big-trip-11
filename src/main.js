@@ -1,17 +1,24 @@
 import HeaderController from "./controllers/header.js";
-import ContentController from "./controllers/content.js";
+import DaysController from "./controllers/days.js";
 import Points from "./models/points.js";
 import {generateEvents} from "./mock/events.js";
 
-const events = generateEvents();
+const mock = generateEvents();
+
 const tripMain = document.querySelector(`.trip-main`);
-const tripEvents = document.querySelector(`.trip-events`);
 
-const model = new Points();
-model.setEvents(events);
+const eventsModel = new Points();
+eventsModel.setEvents(mock);
 
-const header = new HeaderController(tripMain, model);
-const content = new ContentController(tripEvents, model);
+const header = new HeaderController(tripMain, eventsModel);
+const days = new DaysController(eventsModel);
+
+console.log(eventsModel.getEvents()[0].date_from);
+console.log(eventsModel.getEvents()[0].date_to);
+
+// console.log(eventsModel.getEvents());
 
 header.render();
-content.render();
+days.render();
+
+

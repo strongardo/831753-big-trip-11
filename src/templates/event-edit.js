@@ -29,19 +29,16 @@ const createTypesMarkup = (array) => {
   }).join(`\n`);
 };
 
-const createCitiesOptionsMarkup = (array) => {
-  return array.map((it) => {
-    return (
-      `<option value="${it}"></option>`
-    );
-  }).join(`\n`);
+const createCitiesOptionsMarkup = (city) => {
+  return (
+    `<option value="${city}"></option>`
+  );
 };
 
-const createOffersMarkup = (array) => {
+const createOffersMarkup = (array, type) => {
   return array.map((it) => {
 
-    const type = it.type;
-    const name = it.name;
+    const name = it.title;
     const price = it.price;
 
     return (
@@ -57,20 +54,20 @@ const createOffersMarkup = (array) => {
   }).join(`\n`);
 };
 
-const createPhotosMarkup = (array) => {
-  return array.map((it) => {
+const createPhotosMarkup = (pictures) => {
+  return pictures.map((picture) => {
     return (
-      `<img class="event__photo" src="${it}" alt="Event photo">`
+      `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`
     );
   }).join(`\n`);
 };
 
 export const createEventEditTemplate = (event) => {
 
-  const createOffersContainerMarkup = () => {
-    if (event.type.offers.length) {
+  const createOffersContainerMarkup = (type) => {
+    if (event.offers.length) {
 
-      const offersMarkup = createOffersMarkup(event.type.offers);
+      const offersMarkup = createOffersMarkup(event.offers, type);
 
       return (
         `<section class="event__section  event__section--offers">
@@ -85,19 +82,17 @@ export const createEventEditTemplate = (event) => {
     }
   };
 
-  const type = event.type.name;
+  const type = event.type;
   const capitalizeFirstLetterType = capitalizeFirstLetter(type);
   const headingPretext = getHeadingPretext(type);
-  const destination = event.destination.city;
+  const destination = event.destination.name;
   const transferTypesMarkup = createTypesMarkup(TRANSFER_TYPES);
   const activityTypesMarkup = createTypesMarkup(ACTIVITY_TYPES);
-  const someCities = event.destinations.map((it) => {
-    return it.city;
-  });
-  const citiesOptionsMarkup = createCitiesOptionsMarkup(someCities);
-  const offersContainerMarkup = createOffersContainerMarkup();
-  const description = event.destination.info.description;
-  const photosMarkup = createPhotosMarkup(event.destination.info.pictures);
+  const citiesOptionsMarkup = createCitiesOptionsMarkup(destination);
+  const offersContainerMarkup = createOffersContainerMarkup(type);
+  const description = event.destination.description;
+  const pictures = event.destination.pictures;
+  const photosMarkup = createPhotosMarkup(pictures);
 
   return (
     `<form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -136,12 +131,12 @@ export const createEventEditTemplate = (event) => {
         <label class="visually-hidden" for="event-start-time-1">
           From
         </label>
-        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${createTimeMarkup(event.startTime)}">
+        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${createTimeMarkup(event.date_from)}">
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">
           To
         </label>
-        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${createTimeMarkup(event.finishTime)}">
+        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${createTimeMarkup(event.date_to)}">
       </div>
 
       <div class="event__field-group  event__field-group--price">

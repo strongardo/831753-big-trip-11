@@ -8,7 +8,7 @@ export default class PointController {
     this._event = event;
     this._closeOtherForms = closeOtherForms;
 
-    this._isIventOpened = true;
+    this._isIventOpened = false;
 
     this._eventComponent = null;
     this._eventEditComponent = null;
@@ -19,25 +19,36 @@ export default class PointController {
     this._onCloseButtonClick = this._onCloseButtonClick.bind(this);
     this._onFavoriteChange = this._onFavoriteChange.bind(this);
     this._onTypeChange = this._onTypeChange.bind(this);
-    this._onCityChange = this._onCityChange.bind(this);
+    // this._onCityChange = this._onCityChange.bind(this);
   }
 
   render() {
-    this._getEventComponent();
-    render(this._container, this._eventComponent, `beforeend`);
-  }
-
-  eventRender() {
     if (!this._isIventOpened) {
-      this._getEventComponent();
-      this._replaceEditToEvent();
       this._isIventOpened = true;
+      this._eventComponent = new EventComponent(this._event);
+      this._eventComponent.setEditButtonClickHandler(this._onEditButtonClick);
+
+      if (this._eventEditComponent) {
+        this._replaceEditToEvent();
+        return;
+      }
+      render(this._container, this._eventComponent, `beforeend`);
     }
   }
 
-  _getEventComponent() {
-    this._eventComponent = new EventComponent(this._event);
-    this._eventComponent.setEditButtonClickHandler(this._onEditButtonClick);
+  _onEditButtonClick() {
+    this._closeOtherForms();
+    this._formRender();
+    document.addEventListener(`keydown`, this._onEscKeyDown);
+  }
+
+  _onEscKeyDown(evt) {
+    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+
+    if (isEscKey) {
+      this.render();
+      this._removeOnEscKeyDownHandler();
+    }
   }
 
   _formRender() {
@@ -57,37 +68,22 @@ export default class PointController {
     replace(this._eventEditComponent, this._eventComponent);
   }
 
-  _replaceEditToEvent() {
-    replace(this._eventComponent, this._eventEditComponent);
-  }
-
-  _removeOnEscKeyDownHandler() {
-    document.removeEventListener(`keydown`, this._onEscKeyDown);
-  }
-
-  _onEscKeyDown(evt) {
-    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-
-    if (isEscKey) {
-      this.eventRender();
-      this._removeOnEscKeyDownHandler();
-    }
-  }
-
-  _onEditButtonClick() {
-    this._closeOtherForms();
-    this._formRender();
-    document.addEventListener(`keydown`, this._onEscKeyDown);
+  _addFormHandlers() {
+    this._eventEditComponent.setFormSubmitHandler(this._onFormSubmit);
+    this._eventEditComponent.setCloseButtonClickHandler(this._onCloseButtonClick);
+    this._eventEditComponent.setFavoriteChangeHandler(this._onFavoriteChange);
+    this._eventEditComponent.setTypeChangeHandler(this._onTypeChange);
+    this._eventEditComponent.setCityChangeHandler(this._onCityChange);
   }
 
   _onFormSubmit(evt) {
     evt.preventDefault();
-    this.eventRender();
+    this.render();
     this._removeOnEscKeyDownHandler();
   }
 
   _onCloseButtonClick() {
-    this.eventRender();
+    this.render();
     this._removeOnEscKeyDownHandler();
   }
 
@@ -97,28 +93,27 @@ export default class PointController {
   }
 
   _onTypeChange(tripType) {
-    const newType = this._event.types.find((it) => {
-      return it.name === tripType;
-    });
-    this._event = Object.assign({}, this._event, {type: newType});
+    // const newType = this._event.types.find((it) => {
+    //   return it.name === tripType;
+    // });
+    this._event = Object.assign({}, this._event, {type: tripType});
     this._formRender();
   }
 
-  _onCityChange(pointDestination) {
-    const newDestination = this._event.destinations.find((it) => {
-      return it.city === pointDestination;
-    });
-    this._event = Object.assign({}, this._event, {destination: newDestination});
-    this._formRender();
+  // _onCityChange(pointDestination) {
+  //   const newDestination = this._event.destinations.find((it) => {
+  //     return it.city === pointDestination;
+  //   });
+  //   this._event = Object.assign({}, this._event, {destination: newDestination});
+  //   this._formRender();
+  // }
+
+  _removeOnEscKeyDownHandler() {
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
-  _addFormHandlers() {
-    this._eventEditComponent.setFormSubmitHandler(this._onFormSubmit);
-    this._eventEditComponent.setCloseButtonClickHandler(this._onCloseButtonClick);
-    this._eventEditComponent.setFavoriteChangeHandler(this._onFavoriteChange);
-    this._eventEditComponent.setTypeChangeHandler(this._onTypeChange);
-    this._eventEditComponent.setCityChangeHandler(this._onCityChange);
+  _replaceEditToEvent() {
+    replace(this._eventComponent, this._eventEditComponent);
   }
 
 }
-

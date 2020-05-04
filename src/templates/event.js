@@ -12,7 +12,7 @@ const createOffersMarkup = (offers) => {
 
     return offers.slice(START_INDEX_FOR_OFFERS, LAST_INDEX_FOR_OFFERS).map((offer) => {
 
-      const offerName = offer.name;
+      const offerName = offer.title;
       const offerPrice = offer.price;
 
       return (
@@ -31,18 +31,17 @@ const createOffersMarkup = (offers) => {
 
 export const createEventTemplate = (event) => {
 
-  const type = event.type.name;
+  const type = event.type;
   const capitalizeFirstLetterType = capitalizeFirstLetter(type);
   const headingPretext = getHeadingPretext(type);
-  const destination = event.destination.city;
-  const startTimeMarkup = createTimeMarkup(event.startTime);
-  const finishTimeMarkup = createTimeMarkup(event.finishTime);
-  // const startTime = event.startTime;
-  // const finishTime = event.finishTime;
-  const duration = changeTimeFormat(event.duration);
-  // const duration = changeTimeFormat(finishTime - startTime);
-  const price = event.price;
-  const offersMarkup = createOffersMarkup(event.type.offers);
+  const destination = event.destination.name;
+  const startTime = event.date_from;
+  const finishTime = event.date_to;
+  const startTimeMarkup = createTimeMarkup(startTime);
+  const finishTimeMarkup = createTimeMarkup(finishTime);
+  const duration = changeTimeFormat((finishTime - startTime) / 60000);
+  const price = event.base_price;
+  const offersMarkup = createOffersMarkup(event.offers);
 
   return (
     `<li class="trip-events__item">
