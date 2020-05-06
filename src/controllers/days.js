@@ -14,41 +14,52 @@ export default class DaysController {
     this._noEventsComponent = new NoEventsComponent();
     this._daysListComponent = new DaysListComponent();
 
+    this._addBtn = document.querySelector(`.trip-main__event-add-btn`);
+
     this._observer = [];
     this._closeAllForms = this._closeAllForms.bind(this);
     this._onChangeFilter = this._onChangeFilter.bind(this);
     this._onChangeSort = this._onChangeSort.bind(this);
+    this._onAddBtnClick = this._onAddBtnClick.bind(this);
+    this._onChangeEvents = this._onChangeEvents.bind(this);
   }
 
   render() {
+    this._addBtn.addEventListener(`click`, this._onAddBtnClick);
+
     const filterController = new FilterController(this._onChangeFilter);
     filterController.render();
 
     const tripEvents = document.querySelector(`.trip-events`);
 
-    if (!this._eventsModel.getEvents().length) {
+    const events = this._eventsModel.getAllEvents();
+
+    if (!events.length) {
       render(tripEvents, this._noEventsComponent, `beforeend`);
     } else {
       const sortController = new SortController(this._onChangeSort);
       sortController.render();
       render(tripEvents, this._daysListComponent, `beforeend`);
-      const events = this._eventsModel.getEvents();
       this._renderDays(events);
     }
   }
 
+  _renderEvents(events) {
+    this._addBtn.disabled = false;
+
+    const dayComponent = new DayComponent();
+    this._renderDay(dayComponent, events);
+  }
+
   _renderDays(events) {
+    this._addBtn.disabled = false;
+
     const days = this._getDays(events);
     days.forEach((day, i) => {
       const dayComponent = new DayComponent(i + 1, day); // Номер дня не может быть нулем, поэтому +1
-      const thisDayEvents = this._getThisDayEvents(day);
+      const thisDayEvents = this._getThisDayEvents(day, events);
       this._renderDay(dayComponent, thisDayEvents);
     });
-  }
-
-  _renderEvents(events) {
-    const dayComponent = new DayComponent();
-    this._renderDay(dayComponent, events);
   }
 
   _getDays(events) {
@@ -61,12 +72,10 @@ export default class DaysController {
         currentDay = item.date_from.getDate();
       }
     }
-
     return days;
   }
 
-  _getThisDayEvents(day) {
-    const events = this._eventsModel.getEvents();
+  _getThisDayEvents(day, events) {
     return events.filter((item) => {
       return item.date_from.getDate() === day.getDate();
     });
@@ -78,7 +87,7 @@ export default class DaysController {
     const day = dayComponent.getElement();
     const tripEventsList = day.querySelector(`.trip-events__list`);
     events.forEach((event) => {
-      const pointController = new PointController(tripEventsList, event, this._closeAllForms);
+      const pointController = new PointController(tripEventsList, `beforeend`, this._eventsModel, event.id, this._closeAllForms, this._onChangeEvents);
       this._observer.push(pointController);
       pointController.render();
     });
@@ -92,24 +101,64 @@ export default class DaysController {
 
   _onChangeFilter(filterType) {
     const events = this._eventsModel.getFilteredEvents(filterType);
-    this._clearDays();
-    if (events.length) {
-      this._renderDays(events);
-    }
+    this._onChangeEvents(events);
+    this._resetSorts();
   }
 
   _onChangeSort(sortType) {
     const events = this._eventsModel.getSortedEvents(sortType);
-    this._clearDays();
+
     if (sortType !== `default`) {
+      this._clearDays();
       this._renderEvents(events);
       return;
     }
-    this._renderDays(events);
+    this._onChangeEvents(events);
+  }
+
+  _onChangeEvents(events) {
+    const points = (events) ? events : this._eventsModel.getAllEvents();
+    this._clearDays();
+    this._renderDays(points);
   }
 
   _clearDays() {
     const container = document.querySelector(`.trip-days`);
     container.innerHTML = ``;
+    this._observer = [];
+  }
+
+  _onAddBtnClick(evt) {
+    evt.target.disabled = true;
+    this._resetFiltersAndSorts();
+    const container = document.querySelector(`.trip-days`);
+    const eventId = this._eventsModel.createNewEvent();
+    const pointController = new PointController(container, `afterbegin`, this._eventsModel, eventId, this._closeAllForms, this._onChangeEvents, true);
+    this._observer.push(pointController);
+    pointController.render();
+    pointController._formRender();
+  }
+
+  _resetFiltersAndSorts() {
+    this._resetSorts();
+    this._resetFilters();
+    this._dispatchChanges();
+  }
+
+  _resetSorts() {
+    const defaultSortButton = document.querySelector(`#sort-event`);
+    defaultSortButton.checked = true;
+  }
+
+  _resetFilters() {
+    const defaultFilterButton = document.querySelector(`#filter-everything`);
+    defaultFilterButton.checked = true;
+  }
+
+  _dispatchChanges() {
+    const defaultSortButton = document.querySelector(`#sort-event`);
+    const defaultFilterButton = document.querySelector(`#filter-everything`);
+    defaultSortButton.dispatchEvent(new Event(`change`));
+    defaultFilterButton.dispatchEvent(new Event(`change`));
   }
 }

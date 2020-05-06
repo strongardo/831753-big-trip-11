@@ -132,7 +132,7 @@ export const generateEvents = () => {
   });
 
 
-  return events.sort((a, b) => a.date_from - b.date_from); // от меньшего к большему
+  return events.sort((a, b) => a.date_from - b.date_from);
 
 };
 

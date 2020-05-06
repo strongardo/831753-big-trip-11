@@ -13,11 +13,6 @@ eventsModel.setEvents(mock);
 const header = new HeaderController(tripMain, eventsModel);
 const days = new DaysController(eventsModel);
 
-console.log(eventsModel.getEvents()[0].date_from);
-console.log(eventsModel.getEvents()[0].date_to);
-
-// console.log(eventsModel.getEvents());
-
 header.render();
 days.render();
 

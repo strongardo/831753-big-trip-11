@@ -6,7 +6,7 @@ import {render} from "../utils/dom.js";
 export default class HeaderController {
   constructor(container, model) {
     this._container = container;
-    this._events = model.getEvents();
+    this._events = model.getAllEvents();
 
     this._infoComponent = null;
     this._costComponent = null;

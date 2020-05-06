@@ -3,65 +3,102 @@ import {FilterType, SortType} from "../const.js";
 export default class Points {
   constructor() {
     this._events = [];
+
+    this._filterType = FilterType.DEFAULT;
   }
 
-  getEvents() {
+  getAllEvents() {
     return this._events;
+  }
+
+  getSortedEvents(sortType) {
+    const events = this._getFilteredEvents(this._events);
+    return this._getSortedEvents(events, sortType);
+  }
+
+  getFilteredEvents(filterType) {
+    this._filterType = filterType;
+    return this._getFilteredEvents(this._events);
+  }
+
+  getEvent(id) {
+    return this._events.find((item) => {
+      return item.id === id;
+    });
   }
 
   setEvents(events) {
     this._events = events;
   }
 
-  getFilteredEvents(filterType) {
+  updateEvent(id, newEvent) {
+    const index = this._events.findIndex((it) => it.id === id);
+
+    if (index === -1) {
+      return false;
+    }
+
+    this._events = [].concat(this._events.slice(0, index), newEvent, this._events.slice(index + 1));
+
+    return true;
+  }
+
+  createNewEvent() {
+    const newId = this._events.length;
+    const newEvent = Object.assign({}, this._events[this._events.length - 1], {id: newId});
+    this._events.push(newEvent);
+    return newId;
+  }
+
+  deleteEvent(id) {
+    const index = this._events.findIndex((it) => it.id === id);
+
+    if (index === -1) {
+      return false;
+    }
+
+    this._events = [].concat(this._events.slice(0, index), this._events.slice(index + 1));
+
+    return true;
+  }
+
+  _getFilteredEvents(events) {
     let filteredEvents = [];
 
-    switch (filterType) {
+    switch (this._filterType) {
       case FilterType.FUTURE:
-        filteredEvents = this._events.filter((event) => {
+        filteredEvents = events.filter((event) => {
           return event.date_from > new Date();
         });
         break;
       case FilterType.PAST:
-        filteredEvents = this._events.filter((event) => {
+        filteredEvents = events.filter((event) => {
           return event.date_to < new Date();
         });
         break;
       case FilterType.DEFAULT:
-        filteredEvents = this._events;
+        filteredEvents = events;
         break;
     }
 
     return filteredEvents;
   }
 
-  getSortedEvents(sortType) {
+  _getSortedEvents(events, sortType) {
     let sortedEvents = [];
-    const events = this._events.slice();
+    const eventsCopy = events.slice();
 
     switch (sortType) {
       case SortType.TIME:
-        sortedEvents = events.sort((a, b) => a.date_from - b.date_from); // от меньшего к большему
+        sortedEvents = eventsCopy.sort((a, b) => (b.date_to - b.date_from) - (a.date_to - a.date_from));
         break;
       case SortType.PRICE:
-        sortedEvents = events.sort((a, b) => b.base_price - a.base_price); // от большего к меньшему
+        sortedEvents = eventsCopy.sort((a, b) => b.base_price - a.base_price);
         break;
       case SortType.DEFAULT:
-        sortedEvents = events;
+        sortedEvents = eventsCopy;
         break;
     }
     return sortedEvents;
   }
-
-  // updateEvent(id, newEvent) {
-  //   const index = this._events.findIndex((it) => it.id === id);
-
-  //   if (index === -1) {
-  //     return false;
-  //   }
-
-  //   this._events = [].concat(this._tasks.slice(0, index), newEvent, this._events.slice(index + 1));
-
-  //   return true;
-  // }
 }
