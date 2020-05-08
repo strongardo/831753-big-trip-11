@@ -4,8 +4,8 @@ import NavComponent from "../components/nav-component.js";
 import {render} from "../utils/dom.js";
 
 export default class HeaderController {
-  constructor(container, model) {
-    this._container = container;
+  constructor(model) {
+    this._container = document.querySelector(`.trip-main`);
     this._events = model.getAllEvents();
 
     this._infoComponent = null;
