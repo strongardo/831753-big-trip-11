@@ -45,7 +45,32 @@ export default class Points {
 
   createNewEvent() {
     const newId = this._events.length;
-    const newEvent = Object.assign({}, this._events[this._events.length - 1], {id: newId});
+    // const newEvent = Object.assign({}, this._events[this._events.length - 1], {id: newId});
+    const newEvent = {
+      "base_price": 0,
+      "date_from": new Date(),
+      "date_to": new Date(),
+      "destination": {
+        "description": ``,
+        "name": `Some city`,
+        "pictures": [{
+          "src": `https://picsum.photos/200`,
+          "description": `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
+        }],
+      },
+      "id": newId,
+      "is_favorite": false,
+      "offers": [
+        {
+          "title": `Choose meal`,
+          "price": 180
+        }, {
+          "title": `Upgrade to comfort class`,
+          "price": 50
+        }
+      ],
+      "type": `taxi`,
+    };
     this._events.push(newEvent);
     return newId;
   }

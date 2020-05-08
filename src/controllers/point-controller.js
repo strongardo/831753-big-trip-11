@@ -1,5 +1,5 @@
-import EventComponent from "../components/point-component.js";
-import EventEditComponent from "../components/form-component.js";
+import PointComponent from "../components/point-component.js";
+import FormComponent from "../components/form-component.js";
 import {render, replace} from "../utils/dom.js";
 
 export default class PointController {
@@ -14,8 +14,8 @@ export default class PointController {
 
     this._isIventOpened = false;
 
-    this._eventComponent = null;
-    this._eventEditComponent = null;
+    this._pointComponent = null;
+    this._formComponent = null;
 
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
@@ -37,14 +37,14 @@ export default class PointController {
     if (!this._isIventOpened) {
       this._isIventOpened = true;
       const event = this._eventsModel.getEvent(this._eventId);
-      this._eventComponent = new EventComponent(event);
-      this._eventComponent.setEditButtonClickHandler(this._onEditButtonClick);
+      this._pointComponent = new PointComponent(event);
+      this._pointComponent.setEditButtonClickHandler(this._onEditButtonClick);
 
-      if (this._eventEditComponent) {
+      if (this._formComponent) {
         this._replaceEditToEvent();
         return;
       }
-      render(this._container, this._eventComponent, this._place);
+      render(this._container, this._pointComponent, this._place);
     }
   }
 
@@ -66,35 +66,35 @@ export default class PointController {
   _formRender(newEvent) {
     if (this._isIventOpened) {
       const event = this._eventsModel.getEvent(this._eventId);
-      this._eventEditComponent = new EventEditComponent(event, this._isThisNewEvent);
+      this._formComponent = new FormComponent(event, this._isThisNewEvent);
       this._replaceEventToEdit();
       this._isIventOpened = false;
     } else {
-      const oldEventEditComponent = this._eventEditComponent;
-      this._eventEditComponent = new EventEditComponent(newEvent, this._isThisNewEvent);
-      replace(this._eventEditComponent, oldEventEditComponent);
+      const oldFormComponent = this._formComponent;
+      this._formComponent = new FormComponent(newEvent, this._isThisNewEvent);
+      replace(this._formComponent, oldFormComponent);
     }
     this._addFormHandlers();
   }
 
   _replaceEventToEdit() {
-    replace(this._eventEditComponent, this._eventComponent);
+    replace(this._formComponent, this._pointComponent);
   }
 
   _addFormHandlers() {
     if (!this._isThisNewEvent) {
-      this._eventEditComponent.setCloseButtonClickHandler(this._onCloseButtonClick);
-      this._eventEditComponent.setFavoriteChangeHandler(this._onFavoriteChange);
+      this._formComponent.setCloseButtonClickHandler(this._onCloseButtonClick);
+      this._formComponent.setFavoriteChangeHandler(this._onFavoriteChange);
     }
-    this._eventEditComponent.setTypeChangeHandler(this._onTypeChange);
-    this._eventEditComponent.setDeleteBtnClickHandler(this._onDeleteBtnClick);
-    this._eventEditComponent.setSaveBtnClickHandler(this._onSaveBtnClick);
-    this._eventEditComponent.setCityChangeHandler(this._onCityChange);
-    this._eventEditComponent.setPriceChangeHandler(this._onPriceChange);
-    this._eventEditComponent.setStartTimeChangeHandler(this._onStartTimeChange);
-    this._eventEditComponent.setEndTimeChangeHandler(this._onEndTimeChange);
-    this._eventEditComponent.setPriceKeypressHandler();
-    this._eventEditComponent.setCityKeypressHandler();
+    this._formComponent.setTypeChangeHandler(this._onTypeChange);
+    this._formComponent.setDeleteBtnClickHandler(this._onDeleteBtnClick);
+    this._formComponent.setSaveBtnClickHandler(this._onSaveBtnClick);
+    this._formComponent.setCityChangeHandler(this._onCityChange);
+    this._formComponent.setPriceChangeHandler(this._onPriceChange);
+    this._formComponent.setStartTimeChangeHandler(this._onStartTimeChange);
+    this._formComponent.setEndTimeChangeHandler(this._onEndTimeChange);
+    this._formComponent.setPriceKeypressHandler();
+    this._formComponent.setCityKeypressHandler();
   }
 
   _onFormSubmit(evt) {
@@ -110,7 +110,7 @@ export default class PointController {
 
   _onFavoriteChange() {
     this._temporaryEvent.isFavorite = !this._temporaryEvent.isFavorite;
-    this._eventEditComponent.cons();
+    this._formComponent.cons();
   }
 
   _onTypeChange(tripType) {
@@ -160,7 +160,7 @@ export default class PointController {
   }
 
   _replaceEditToEvent() {
-    replace(this._eventComponent, this._eventEditComponent);
+    replace(this._pointComponent, this._formComponent);
   }
 
 }

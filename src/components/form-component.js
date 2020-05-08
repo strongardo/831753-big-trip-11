@@ -1,9 +1,9 @@
 import AbstractComponent from "./abstract-component.js";
-import {createEventEditTemplate} from "../templates/form-template.js";
+import {createFormTemplate} from "../templates/form-template.js";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 
-export default class EventEdit extends AbstractComponent {
+export default class Form extends AbstractComponent {
   constructor(event, isThisNewEvent = false) {
     super();
 
@@ -22,7 +22,7 @@ export default class EventEdit extends AbstractComponent {
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._event, this._isThisNewEvent);
+    return createFormTemplate(this._event, this._isThisNewEvent);
   }
 
   _applyFlatpickrs() {

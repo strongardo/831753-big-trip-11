@@ -59,8 +59,11 @@ const createOffersMarkup = (array, type) => {
 
 const createPhotosMarkup = (pictures) => {
   return pictures.map((picture) => {
+    const url = picture.src;
+    const description = picture.description;
+
     return (
-      `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`
+      `<img class="event__photo" src="${url}" alt="${description}">`
     );
   }).join(`\n`);
 };
@@ -99,7 +102,7 @@ const createExtraMarkup = (favoritecheckBoxCondition) => {
   );
 };
 
-export const createEventEditTemplate = (event, isThisNewEvent) => {
+export const createFormTemplate = (event, isThisNewEvent) => {
   const price = event.base_price;
   const type = event.type;
   const capitalizeFirstLetterType = capitalizeFirstLetter(type);
@@ -108,6 +111,10 @@ export const createEventEditTemplate = (event, isThisNewEvent) => {
   const transferTypesMarkup = createTypesMarkup(TRANSFER_TYPES);
   const activityTypesMarkup = createTypesMarkup(ACTIVITY_TYPES);
   const citiesOptionsMarkup = createCitiesOptionsMarkup(destination);
+  const dateFrom = event.date_from;
+  const dateTo = event.date_to;
+  const dateFromMarkup = createTimeMarkup(dateFrom);
+  const dateToMarkup = createTimeMarkup(dateTo);
   const offersContainerMarkup = createOffersContainerMarkup(type, event);
   const description = event.destination.description;
   const pictures = event.destination.pictures;
@@ -153,12 +160,12 @@ export const createEventEditTemplate = (event, isThisNewEvent) => {
         <label class="visually-hidden" for="event-start-time-1">
           From
         </label>
-        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" datetime="${event.date_from}" value="${createTimeMarkup(event.date_from)}">
+        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" datetime="${dateFrom}" value="${dateFromMarkup}">
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">
           To
         </label>
-        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" datetime="${event.date_to}" value="${createTimeMarkup(event.date_to)}">
+        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" datetime="${dateTo}" value="${dateToMarkup}">
       </div>
 
       <div class="event__field-group  event__field-group--price">

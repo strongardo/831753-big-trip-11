@@ -2,7 +2,7 @@ import {START_INDEX_FOR_EVENTS} from "../const.js";
 import FilterController from "./filter-controller.js";
 import SortController from "./sort-controller.js";
 import PointController from "./point-controller.js";
-import NoEventsComponent from "../components/stub-component.js";
+import StubComponent from "../components/stub-component.js";
 import DaysListComponent from "../components/days-list-component.js";
 import DayComponent from "../components/day-component.js";
 import {render} from "../utils/dom.js";
@@ -11,8 +11,11 @@ export default class DaysController {
   constructor(eventsModel) {
     this._eventsModel = eventsModel;
 
-    this._noEventsComponent = new NoEventsComponent();
+    this._stubComponent = null;
     this._daysListComponent = new DaysListComponent();
+
+    this._filterController = null;
+    this._sortController = null;
 
     this._addBtn = document.querySelector(`.trip-main__event-add-btn`);
 
@@ -27,18 +30,23 @@ export default class DaysController {
   render() {
     this._addBtn.addEventListener(`click`, this._onAddBtnClick);
 
-    const filterController = new FilterController(this._onChangeFilter);
-    filterController.render();
+    if (!this._filterController) {
+      this._filterController = new FilterController(this._onChangeFilter);
+      this._filterController.render();
+    }
 
     const tripEvents = document.querySelector(`.trip-events`);
 
     const events = this._eventsModel.getAllEvents();
 
     if (!events.length) {
-      render(tripEvents, this._noEventsComponent, `beforeend`);
+      this._stubComponent = new StubComponent();
+      render(tripEvents, this._stubComponent, `beforeend`);
     } else {
-      const sortController = new SortController(this._onChangeSort);
-      sortController.render();
+      if (!this._sortController) {
+        this._sortController = new SortController(this._onChangeSort);
+        this._sortController.render();
+      }
       render(tripEvents, this._daysListComponent, `beforeend`);
       this._renderDays(events);
     }
@@ -119,11 +127,18 @@ export default class DaysController {
   _onChangeEvents(events) {
     const points = (events) ? events : this._eventsModel.getAllEvents();
     this._clearDays();
-    this._renderDays(points);
+    if (this._stubComponent) {
+      this.render();
+    } else {
+      this._renderDays(points);
+    }
   }
 
   _clearDays() {
-    const container = document.querySelector(`.trip-days`);
+    let container = document.querySelector(`.trip-days`);
+    if (!container) {
+      container = document.querySelector(`.trip-events`);
+    }
     container.innerHTML = ``;
     this._observer = [];
   }
@@ -131,7 +146,10 @@ export default class DaysController {
   _onAddBtnClick(evt) {
     evt.target.disabled = true;
     this._resetFiltersAndSorts();
-    const container = document.querySelector(`.trip-days`);
+    let container = document.querySelector(`.trip-days`);
+    if (!container) {
+      container = document.querySelector(`.trip-events`);
+    }
     const eventId = this._eventsModel.createNewEvent();
     const pointController = new PointController(container, `afterbegin`, this._eventsModel, eventId, this._closeAllForms, this._onChangeEvents, true);
     this._observer.push(pointController);
@@ -147,7 +165,10 @@ export default class DaysController {
 
   _resetSorts() {
     const defaultSortButton = document.querySelector(`#sort-event`);
-    defaultSortButton.checked = true;
+
+    if (defaultSortButton) {
+      defaultSortButton.checked = true;
+    }
   }
 
   _resetFilters() {
@@ -158,7 +179,9 @@ export default class DaysController {
   _dispatchChanges() {
     const defaultSortButton = document.querySelector(`#sort-event`);
     const defaultFilterButton = document.querySelector(`#filter-everything`);
-    defaultSortButton.dispatchEvent(new Event(`change`));
+    if (defaultSortButton) {
+      defaultSortButton.dispatchEvent(new Event(`change`));
+    }
     defaultFilterButton.dispatchEvent(new Event(`change`));
   }
 }

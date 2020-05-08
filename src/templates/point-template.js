@@ -29,17 +29,16 @@ const createOffersMarkup = (offers) => {
   }
 };
 
-export const createEventTemplate = (event) => {
-
+export const createPointTemplate = (event) => {
   const type = event.type;
   const capitalizeFirstLetterType = capitalizeFirstLetter(type);
   const headingPretext = getHeadingPretext(type);
   const destination = event.destination.name;
-  const startTime = event.date_from;
-  const finishTime = event.date_to;
-  const startTimeMarkup = createTimeMarkup(startTime);
-  const finishTimeMarkup = createTimeMarkup(finishTime);
-  const duration = changeTimeFormat((finishTime - startTime) / 60000);
+  const dateFrom = event.date_from;
+  const dateTo = event.date_to;
+  const dateFromMarkup = createTimeMarkup(dateFrom);
+  const dateToMarkup = createTimeMarkup(dateTo);
+  const duration = changeTimeFormat((dateTo - dateFrom) / 60000);
   const price = event.base_price;
   const offersMarkup = createOffersMarkup(event.offers);
 
@@ -53,9 +52,9 @@ export const createEventTemplate = (event) => {
 
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="">${startTimeMarkup}</time>
+          <time class="event__start-time" datetime="">${dateFromMarkup}</time>
           &mdash;
-          <time class="event__end-time" datetime="">${finishTimeMarkup}</time>
+          <time class="event__end-time" datetime="">${dateToMarkup}</time>
         </p>
         <p class="event__duration">${duration}</p>
       </div>
