@@ -1,5 +1,5 @@
 import AbstractComponent from "./abstract-component.js";
-import {createSortTemplate} from "../templates/sort.js";
+import {createSortTemplate} from "../templates/sort-template.js";
 import {SortType} from "../const.js";
 
 export default class Sort extends AbstractComponent {
@@ -28,7 +28,7 @@ export default class Sort extends AbstractComponent {
 
       this._currenSortType = sortType;
 
-      handler();
+      handler(sortType);
     });
   }
 }

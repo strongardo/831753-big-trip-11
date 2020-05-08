@@ -1,5 +1,5 @@
 import AbstractComponent from "./abstract-component.js";
-import {createDayTemplate} from "../templates/day.js";
+import {createDayTemplate} from "../templates/day-template.js";
 
 export default class Day extends AbstractComponent {
   constructor(number, date) {

@@ -12,7 +12,7 @@ const createOffersMarkup = (offers) => {
 
     return offers.slice(START_INDEX_FOR_OFFERS, LAST_INDEX_FOR_OFFERS).map((offer) => {
 
-      const offerName = offer.name;
+      const offerName = offer.title;
       const offerPrice = offer.price;
 
       return (
@@ -29,20 +29,18 @@ const createOffersMarkup = (offers) => {
   }
 };
 
-export const createEventTemplate = (event) => {
-
-  const type = event.type.name;
+export const createPointTemplate = (event) => {
+  const type = event.type;
   const capitalizeFirstLetterType = capitalizeFirstLetter(type);
   const headingPretext = getHeadingPretext(type);
-  const destination = event.destination.city;
-  const startTimeMarkup = createTimeMarkup(event.startTime);
-  const finishTimeMarkup = createTimeMarkup(event.finishTime);
-  // const startTime = event.startTime;
-  // const finishTime = event.finishTime;
-  const duration = changeTimeFormat(event.duration);
-  // const duration = changeTimeFormat(finishTime - startTime);
-  const price = event.price;
-  const offersMarkup = createOffersMarkup(event.type.offers);
+  const destination = event.destination.name;
+  const dateFrom = event.date_from;
+  const dateTo = event.date_to;
+  const dateFromMarkup = createTimeMarkup(dateFrom);
+  const dateToMarkup = createTimeMarkup(dateTo);
+  const duration = changeTimeFormat((dateTo - dateFrom) / 60000);
+  const price = event.base_price;
+  const offersMarkup = createOffersMarkup(event.offers);
 
   return (
     `<li class="trip-events__item">
@@ -54,9 +52,9 @@ export const createEventTemplate = (event) => {
 
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="">${startTimeMarkup}</time>
+          <time class="event__start-time" datetime="">${dateFromMarkup}</time>
           &mdash;
-          <time class="event__end-time" datetime="">${finishTimeMarkup}</time>
+          <time class="event__end-time" datetime="">${dateToMarkup}</time>
         </p>
         <p class="event__duration">${duration}</p>
       </div>

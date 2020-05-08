@@ -1,17 +1,16 @@
-import HeaderController from "./controllers/header.js";
-import ContentController from "./controllers/content.js";
-import Points from "./models/points.js";
-import {generateEvents} from "./mock/events.js";
+import EventsModel from "./models/events-model.js";
+import {generateEvents} from "./mock/events-mock.js";
+import HeaderController from "./controllers/header-controller.js";
+import MasterController from "./controllers/master-controller.js";
 
+const eventsModel = new EventsModel();
 const events = generateEvents();
-const tripMain = document.querySelector(`.trip-main`);
-const tripEvents = document.querySelector(`.trip-events`);
+eventsModel.setEvents(events);
 
-const model = new Points();
-model.setEvents(events);
+const headerController = new HeaderController(eventsModel);
+const masterController = new MasterController(eventsModel);
 
-const header = new HeaderController(tripMain, model);
-const content = new ContentController(tripEvents, model);
+headerController.render();
+masterController.render();
 
-header.render();
-content.render();
+

@@ -5,7 +5,7 @@ export const createCostTemplate = (events) => {
   if (events.length) {
     const getSum = () => {
       events.forEach((it) => {
-        sum += it.price;
+        sum += it.base_price;
       });
       return sum;
     };

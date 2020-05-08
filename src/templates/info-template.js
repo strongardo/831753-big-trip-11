@@ -3,9 +3,9 @@ import {MONTHS, INDEX_FOR_FIRST_EVENT, INDEX_FOR_SECOND_EVENT, CITIES_FOR_INFO_Q
 export const createInfoTemplate = (events) => {
   if (events.length) {
     const getCities = () => {
-      const firstCity = events[INDEX_FOR_FIRST_EVENT].destination.city;
-      const secondCity = events[INDEX_FOR_SECOND_EVENT].destination.city;
-      const lastCity = events[events.length - 1].destination.city;
+      const firstCity = events[INDEX_FOR_FIRST_EVENT].destination.name;
+      const secondCity = events[INDEX_FOR_SECOND_EVENT].destination.name;
+      const lastCity = events[events.length - 1].destination.name;
 
       if (events.length > CITIES_FOR_INFO_QUANTITY) {
         return `${firstCity} — … — ${lastCity}`;
@@ -16,8 +16,8 @@ export const createInfoTemplate = (events) => {
 
     const getDates = () => {
 
-      const firstDate = events[INDEX_FOR_FIRST_EVENT].startTime;
-      const lastDate = events[events.length - 1].startTime;
+      const firstDate = events[INDEX_FOR_FIRST_EVENT].date_from;
+      const lastDate = events[events.length - 1].date_from;
 
       const firstDateMonth = MONTHS[firstDate.getMonth()];
       const firstDateDay = firstDate.getDate();

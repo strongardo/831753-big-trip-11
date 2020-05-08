@@ -1,5 +1,5 @@
 import AbstractComponent from "./abstract-component.js";
-import {createCostTemplate} from "../templates/cost.js";
+import {createCostTemplate} from "../templates/cost-template.js";
 
 export default class Cost extends AbstractComponent {
   constructor(events) {
