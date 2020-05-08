@@ -1,4 +1,4 @@
-import SortComponent from "../components/sort.js";
+import SortComponent from "../components/sort-component.js";
 import {render} from "../utils/dom.js";
 
 

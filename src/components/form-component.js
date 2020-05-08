@@ -1,5 +1,5 @@
 import AbstractComponent from "./abstract-component.js";
-import {createEventEditTemplate} from "../templates/event-edit.js";
+import {createEventEditTemplate} from "../templates/form-template.js";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 

@@ -1,10 +1,10 @@
 import {START_INDEX_FOR_EVENTS} from "../const.js";
-import FilterController from "../controllers/filter.js";
-import SortController from "../controllers/sort.js";
+import FilterController from "./filter-controller.js";
+import SortController from "./sort-controller.js";
 import PointController from "./point-controller.js";
-import NoEventsComponent from "../components/no-events.js";
-import DaysListComponent from "../components/days-list.js";
-import DayComponent from "../components/day.js";
+import NoEventsComponent from "../components/stub-component.js";
+import DaysListComponent from "../components/days-list-component.js";
+import DayComponent from "../components/day-component.js";
 import {render} from "../utils/dom.js";
 
 export default class DaysController {

@@ -1,5 +1,5 @@
 import AbstractComponent from "./abstract-component.js";
-import {createFilterTemplate} from "../templates/filter.js";
+import {createFilterTemplate} from "../templates/filter-template.js";
 import {FilterType} from "../const.js";
 
 export default class Filter extends AbstractComponent {

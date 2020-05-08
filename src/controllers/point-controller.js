@@ -1,5 +1,5 @@
-import EventComponent from "../components/event.js";
-import EventEditComponent from "../components/event-edit.js";
+import EventComponent from "../components/point-component.js";
+import EventEditComponent from "../components/form-component.js";
 import {render, replace} from "../utils/dom.js";
 
 export default class PointController {

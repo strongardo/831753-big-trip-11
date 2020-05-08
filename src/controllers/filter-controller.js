@@ -1,4 +1,4 @@
-import FilterComponent from "../components/filter.js";
+import FilterComponent from "../components/filter-component.js";
 import {render} from "../utils/dom.js";
 
 export default class FilterController {

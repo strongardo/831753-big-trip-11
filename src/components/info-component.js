@@ -1,5 +1,5 @@
 import AbstractComponent from "./abstract-component.js";
-import {createInfoTemplate} from "../templates/info.js";
+import {createInfoTemplate} from "../templates/info-template.js";
 
 export default class Info extends AbstractComponent {
   constructor(events) {

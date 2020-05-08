@@ -1,6 +1,6 @@
-import InfoComponent from "../components/info.js";
-import CostComponent from "../components/cost.js";
-import NavComponent from "../components/nav.js";
+import InfoComponent from "../components/info-component.js";
+import CostComponent from "../components/cost-component.js";
+import NavComponent from "../components/nav-component.js";
 import {render} from "../utils/dom.js";
 
 export default class HeaderController {

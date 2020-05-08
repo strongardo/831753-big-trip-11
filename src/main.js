@@ -1,7 +1,7 @@
-import HeaderController from "./controllers/header.js";
-import DaysController from "./controllers/days.js";
-import Points from "./models/points.js";
-import {generateEvents} from "./mock/events.js";
+import HeaderController from "./controllers/header-controller.js";
+import DaysController from "./controllers/master-controller.js";
+import Points from "./models/events-model.js";
+import {generateEvents} from "./mock/events-mock.js";
 
 const mock = generateEvents();
 

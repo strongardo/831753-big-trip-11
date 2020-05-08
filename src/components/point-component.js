@@ -1,5 +1,5 @@
 import AbstractComponent from "./abstract-component.js";
-import {createEventTemplate} from "../templates/event.js";
+import {createEventTemplate} from "../templates/point-template.js";
 
 export default class Event extends AbstractComponent {
   constructor(event) {
