@@ -35,3 +35,36 @@ export const getHeadingPretext = (type) => {
   };
   return (TYPES.findIndex(isCurrentElement) < START_INDEX_FOR_ACTIVITY_TYPES) ? `to` : `in`;
 };
+
+export const calculateCostOfType = (events, type) => {
+  let cost = 0;
+  events.forEach((event) => {
+    if (event.type === type) {
+      cost += event.base_price;
+    }
+  });
+  return cost;
+};
+
+export const calculateAmountOfType = (events, type) => {
+  let amount = 0;
+  events.forEach((event) => {
+    if (event.type === type) {
+      amount++;
+    }
+  });
+  return amount;
+};
+
+export const calculateDurationOfType = (events, type) => {
+  let duration = 0;
+  events.forEach((event) => {
+    if (event.type === type) {
+      const dateFrom = event.date_from;
+      const dateTo = event.date_to;
+      const difference = Math.round((dateTo - dateFrom) / 3600000);
+      duration += difference;
+    }
+  });
+  return duration;
+};

@@ -1,7 +1,9 @@
 import {START_INDEX_FOR_EVENTS} from "../const.js";
+import NavController from "./nav-controller.js";
 import FilterController from "./filter-controller.js";
 import SortController from "./sort-controller.js";
 import PointController from "./point-controller.js";
+import StatisticComponent from "../components/statistic-component.js";
 import StubComponent from "../components/stub-component.js";
 import DaysListComponent from "../components/days-list-component.js";
 import DayComponent from "../components/day-component.js";
@@ -12,6 +14,7 @@ export default class DaysController {
     this._eventsModel = eventsModel;
 
     this._stubComponent = null;
+    this._statisticComponent = null;
     this._daysListComponent = new DaysListComponent();
 
     this._filterController = null;
@@ -25,10 +28,14 @@ export default class DaysController {
     this._onChangeSort = this._onChangeSort.bind(this);
     this._onAddBtnClick = this._onAddBtnClick.bind(this);
     this._onChangeEvents = this._onChangeEvents.bind(this);
+    this._renderCharts = this._renderCharts.bind(this);
   }
 
   render() {
     this._addBtn.addEventListener(`click`, this._onAddBtnClick);
+
+    const navController = new NavController();
+    navController.render();
 
     if (!this._filterController) {
       this._filterController = new FilterController(this._onChangeFilter);
@@ -50,7 +57,19 @@ export default class DaysController {
       render(tripEvents, this._daysListComponent, `beforeend`);
       this._renderDays(events);
     }
+
+    if (!this._statisticComponent) {
+      this._statisticComponent = new StatisticComponent(this._eventsModel);
+      const pageBodyContainer = document.querySelectorAll(`.page-body__container`)[1];
+      render(pageBodyContainer, this._statisticComponent, `beforeend`);
+      this._renderCharts();
+    }
   }
+
+  _renderCharts() {
+    this._statisticComponent.renderCharts();
+  }
+
 
   _renderEvents(events) {
     this._addBtn.disabled = false;
