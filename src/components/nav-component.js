@@ -6,8 +6,8 @@ export default class Nav extends AbstractComponent {
   constructor() {
     super();
 
-    this._tableButton = this.getElement().querySelectorAll(`.trip-tabs__btn`)[0];
-    this._statsButton = this.getElement().querySelectorAll(`.trip-tabs__btn`)[1];
+    this._tableButton = this.getElement().querySelector(`.trip-tabs__btn--table`);
+    this._statsButton = this.getElement().querySelector(`.trip-tabs__btn--stats`);
   }
 
 
