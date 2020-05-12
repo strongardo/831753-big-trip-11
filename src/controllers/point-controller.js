@@ -3,7 +3,7 @@ import FormComponent from "../components/form-component.js";
 import {render, replace} from "../utils/dom.js";
 
 export default class PointController {
-  constructor(container, place, model, id, closeOtherForms, onChangeEvents, isThisNewEvent = false) {
+  constructor(container, place, model, id, closeOtherForms, onChangeEvents, isThisNewEvent, toggleAddBtnStatus) {
     this._container = container;
     this._place = place;
     this._eventsModel = model;
@@ -11,6 +11,7 @@ export default class PointController {
     this._closeOtherForms = closeOtherForms;
     this._onChangeEvents = onChangeEvents;
     this._isThisNewEvent = isThisNewEvent;
+    this._toggleAddBtnStatus = toggleAddBtnStatus;
 
     this._isIventOpened = false;
 
@@ -50,7 +51,7 @@ export default class PointController {
 
   _onEditButtonClick() {
     this._closeOtherForms();
-    this._formRender();
+    this.formRender();
     document.addEventListener(`keydown`, this._onEscKeyDown);
   }
 
@@ -63,7 +64,7 @@ export default class PointController {
     }
   }
 
-  _formRender(newEvent) {
+  formRender(newEvent) {
     if (this._isIventOpened) {
       const event = this._eventsModel.getEvent(this._eventId);
       this._formComponent = new FormComponent(event, this._isThisNewEvent);
@@ -101,6 +102,9 @@ export default class PointController {
     evt.preventDefault();
     this.render();
     this._removeOnEscKeyDownHandler();
+    if (this._isThisNewEvent) {
+      this._toggleAddBtnStatus();
+    }
   }
 
   _onCloseButtonClick() {
@@ -110,12 +114,11 @@ export default class PointController {
 
   _onFavoriteChange() {
     this._temporaryEvent.isFavorite = !this._temporaryEvent.isFavorite;
-    this._formComponent.cons();
   }
 
   _onTypeChange(tripType) {
     this._temporaryEvent.type = tripType;
-    this._formRender(this._temporaryEvent);
+    this.formRender(this._temporaryEvent);
   }
 
   _onCityChange(destination) {
@@ -140,6 +143,10 @@ export default class PointController {
   _onDeleteBtnClick() {
     this._eventsModel.deleteEvent(this._eventId);
     this._onChangeEvents();
+    this._removeOnEscKeyDownHandler();
+    if (this._isThisNewEvent) {
+      this._toggleAddBtnStatus();
+    }
   }
 
   _onSaveBtnClick(evt) {
@@ -152,6 +159,12 @@ export default class PointController {
       this._onChangeEvents();
     } else {
       this.render();
+    }
+
+    this._removeOnEscKeyDownHandler();
+
+    if (this._isThisNewEvent) {
+      this._toggleAddBtnStatus();
     }
   }
 
