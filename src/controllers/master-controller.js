@@ -1,22 +1,28 @@
-import {START_INDEX_FOR_EVENTS} from "../const.js";
+import {START_INDEX_FOR_EVENTS, RenderPosition, SortType} from "../const.js";
+import NavController from "./nav-controller.js";
 import FilterController from "./filter-controller.js";
 import SortController from "./sort-controller.js";
 import PointController from "./point-controller.js";
+import StatisticComponent from "../components/statistic-component.js";
 import StubComponent from "../components/stub-component.js";
 import DaysListComponent from "../components/days-list-component.js";
 import DayComponent from "../components/day-component.js";
 import {render} from "../utils/dom.js";
 
-export default class DaysController {
-  constructor(eventsModel) {
-    this._eventsModel = eventsModel;
+export default class MasterController {
+  constructor(model) {
+    this._eventsModel = model;
 
-    this._stubComponent = null;
+    this._stubComponent = new StubComponent();
+    this._statisticComponent = new StatisticComponent(this._eventsModel);
     this._daysListComponent = new DaysListComponent();
 
+    this._navController = new NavController(this._statisticComponent);
     this._filterController = null;
     this._sortController = null;
 
+    this._container = document.querySelector(`.trip-events`);
+    this._daysContainer = this._daysListComponent.getElement();
     this._addBtn = document.querySelector(`.trip-main__event-add-btn`);
 
     this._observer = [];
@@ -24,44 +30,82 @@ export default class DaysController {
     this._onChangeFilter = this._onChangeFilter.bind(this);
     this._onChangeSort = this._onChangeSort.bind(this);
     this._onAddBtnClick = this._onAddBtnClick.bind(this);
-    this._onChangeEvents = this._onChangeEvents.bind(this);
+    this._reRenderDays = this._reRenderDays.bind(this);
+    this._renderCharts = this._renderCharts.bind(this);
+    this._toggleAddBtnStatus = this._toggleAddBtnStatus.bind(this);
   }
 
   render() {
+    // Где лучше повесить обработчик на кнопку добавления новой точки маршрута?
     this._addBtn.addEventListener(`click`, this._onAddBtnClick);
 
-    if (!this._filterController) {
-      this._filterController = new FilterController(this._onChangeFilter);
-      this._filterController.render();
-    }
+    this._renderStatistic();
 
-    const tripEvents = document.querySelector(`.trip-events`);
+    this._renderNav();
+    this._renderFilter();
 
     const events = this._eventsModel.getAllEvents();
 
     if (!events.length) {
-      this._stubComponent = new StubComponent();
-      render(tripEvents, this._stubComponent, `beforeend`);
+      this._renderStub();
     } else {
-      if (!this._sortController) {
-        this._sortController = new SortController(this._onChangeSort);
-        this._sortController.render();
-      }
-      render(tripEvents, this._daysListComponent, `beforeend`);
+      this._renderSort();
+      this._renderDaysList();
       this._renderDays(events);
     }
   }
 
-  _renderEvents(events) {
-    this._addBtn.disabled = false;
+  _onAddBtnClick() {
+    this._toggleAddBtnStatus();
+    this._resetFiltersAndSorts();
+    let container = this._daysContainer;
+    if (!container) {
+      container = this._container;
+    }
+    const eventId = this._eventsModel.createNewEvent();
+    const pointController = new PointController(container, RenderPosition.AFTERBEGIN, this._eventsModel, eventId, this._closeAllForms, this._reRenderDays, true, this._toggleAddBtnStatus);
+    this._observer.push(pointController);
+    pointController.render();
+    pointController.formRender();
+  }
 
+  _renderStatistic() {
+    const сontainer = document.querySelector(`.page-main__container`);
+    render(сontainer, this._statisticComponent, RenderPosition.BEFOREEND);
+  }
+
+  _renderCharts() {
+    this._statisticComponent.renderCharts();
+  }
+
+  _renderDaysList() {
+    render(this._container, this._daysListComponent, RenderPosition.BEFOREEND);
+  }
+
+  _renderStub() {
+    render(this._container, this._stubComponent, RenderPosition.BEFOREEND);
+  }
+
+  _renderSort() {
+    this._sortController = new SortController(this._onChangeSort);
+    this._sortController.render();
+  }
+
+  _renderFilter() {
+    this._filterController = new FilterController(this._onChangeFilter);
+    this._filterController.render();
+  }
+
+  _renderNav() {
+    this._navController.render();
+  }
+
+  _renderPoints(events) {
     const dayComponent = new DayComponent();
     this._renderDay(dayComponent, events);
   }
 
   _renderDays(events) {
-    this._addBtn.disabled = false;
-
     const days = this._getDays(events);
     days.forEach((day, i) => {
       const dayComponent = new DayComponent(i + 1, day); // Номер дня не может быть нулем, поэтому +1
@@ -90,12 +134,11 @@ export default class DaysController {
   }
 
   _renderDay(dayComponent, events) {
-    const tripDays = this._daysListComponent.getElement();
-    render(tripDays, dayComponent, `beforeend`);
+    render(this._daysContainer, dayComponent, RenderPosition.BEFOREEND);
     const day = dayComponent.getElement();
     const tripEventsList = day.querySelector(`.trip-events__list`);
     events.forEach((event) => {
-      const pointController = new PointController(tripEventsList, `beforeend`, this._eventsModel, event.id, this._closeAllForms, this._onChangeEvents);
+      const pointController = new PointController(tripEventsList, RenderPosition.BEFOREEND, this._eventsModel, event.id, this._closeAllForms, this._reRenderDays, false);
       this._observer.push(pointController);
       pointController.render();
     });
@@ -108,80 +151,43 @@ export default class DaysController {
   }
 
   _onChangeFilter(filterType) {
+    this._sortController.resetSorts();
     const events = this._eventsModel.getFilteredEvents(filterType);
-    this._onChangeEvents(events);
-    this._resetSorts();
+    this._reRenderDays(events);
   }
 
   _onChangeSort(sortType) {
     const events = this._eventsModel.getSortedEvents(sortType);
 
-    if (sortType !== `default`) {
+    if (sortType !== SortType.DEFAULT) {
       this._clearDays();
-      this._renderEvents(events);
+      this._renderPoints(events);
       return;
     }
-    this._onChangeEvents(events);
+    this._reRenderDays(events);
   }
 
-  _onChangeEvents(events) {
-    const points = (events) ? events : this._eventsModel.getAllEvents();
+  _reRenderDays(events = this._eventsModel.getAllEvents()) {
     this._clearDays();
-    if (this._stubComponent) {
-      this.render();
+    if (events.length > 0) {
+      this._renderDays(events);
     } else {
-      this._renderDays(points);
+      this._renderStub();
     }
   }
 
   _clearDays() {
-    let container = document.querySelector(`.trip-days`);
-    if (!container) {
-      container = document.querySelector(`.trip-events`);
-    }
-    container.innerHTML = ``;
+    this._daysContainer.innerHTML = ``;
     this._observer = [];
   }
 
-  _onAddBtnClick(evt) {
-    evt.target.disabled = true;
-    this._resetFiltersAndSorts();
-    let container = document.querySelector(`.trip-days`);
-    if (!container) {
-      container = document.querySelector(`.trip-events`);
-    }
-    const eventId = this._eventsModel.createNewEvent();
-    const pointController = new PointController(container, `afterbegin`, this._eventsModel, eventId, this._closeAllForms, this._onChangeEvents, true);
-    this._observer.push(pointController);
-    pointController.render();
-    pointController._formRender();
-  }
-
   _resetFiltersAndSorts() {
-    this._resetSorts();
-    this._resetFilters();
-    this._dispatchChanges();
+    this._sortController.resetSorts();
+    this._filterController.resetFilters();
+    this._reRenderDays();
   }
 
-  _resetSorts() {
-    const defaultSortButton = document.querySelector(`#sort-event`);
-
-    if (defaultSortButton) {
-      defaultSortButton.checked = true;
-    }
-  }
-
-  _resetFilters() {
-    const defaultFilterButton = document.querySelector(`#filter-everything`);
-    defaultFilterButton.checked = true;
-  }
-
-  _dispatchChanges() {
-    const defaultSortButton = document.querySelector(`#sort-event`);
-    const defaultFilterButton = document.querySelector(`#filter-everything`);
-    if (defaultSortButton) {
-      defaultSortButton.dispatchEvent(new Event(`change`));
-    }
-    defaultFilterButton.dispatchEvent(new Event(`change`));
+  _toggleAddBtnStatus() {
+    this._addBtn.disabled = !this._addBtn.disabled;
   }
 }

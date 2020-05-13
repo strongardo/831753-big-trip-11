@@ -1,3 +1,4 @@
+import {RenderPosition} from "../const.js";
 import FilterComponent from "../components/filter-component.js";
 import {render} from "../utils/dom.js";
 
@@ -6,6 +7,8 @@ export default class FilterController {
     this._onChangeFilter = onChangeFilter;
 
     this._filterComponent = new FilterComponent();
+
+    this.resetFilters = this.resetFilters.bind(this);
   }
 
   render() {
@@ -18,6 +21,11 @@ export default class FilterController {
     });
 
     const tripControls = document.querySelector(`.trip-controls`);
-    render(tripControls, this._filterComponent, `beforeend`);
+    render(tripControls, this._filterComponent, RenderPosition.BEFOREEND);
+  }
+
+  resetFilters() {
+    const defaultFilterButton = this._filterComponent.getElement().querySelector(`#filter-everything`);
+    defaultFilterButton.checked = true;
   }
 }

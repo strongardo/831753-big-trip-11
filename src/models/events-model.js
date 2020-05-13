@@ -7,28 +7,33 @@ export default class Points {
     this._filterType = FilterType.DEFAULT;
   }
 
+  setEvents(events) {
+    this._events = events;
+  }
+
   getAllEvents() {
     return this._events;
   }
 
+  // Возвращает отсортированные события, учитывая текущий тип фильтра.
+  // В ТЗ явно об этом сказано, но похоже так логичнее. Или не нужно фильтровать?
   getSortedEvents(sortType) {
-    const events = this._getFilteredEvents(this._events);
+    const events = this._getFilteredEvents();
     return this._getSortedEvents(events, sortType);
   }
 
+  // Возвращает отфильтрованные события, НЕ учитывая текущий тип сортировки.
+  // В ТЗ сказано: "При смене фильтра разбивка по дням сохраняется",
+  // значит сортировка тут не нужна, при которой разбивки нет. Так?
   getFilteredEvents(filterType) {
     this._filterType = filterType;
-    return this._getFilteredEvents(this._events);
+    return this._getFilteredEvents();
   }
 
   getEvent(id) {
     return this._events.find((item) => {
       return item.id === id;
     });
-  }
-
-  setEvents(events) {
-    this._events = events;
   }
 
   updateEvent(id, newEvent) {
@@ -43,9 +48,10 @@ export default class Points {
     return true;
   }
 
+  // Добавляет новое событие в events. Ничего лучше не придумал, как хранить тут шаблон.
+  // Или есть интереснее варианты?
   createNewEvent() {
     const newId = this._events.length;
-    // const newEvent = Object.assign({}, this._events[this._events.length - 1], {id: newId});
     const newEvent = {
       "base_price": 0,
       "date_from": new Date(),
@@ -87,7 +93,8 @@ export default class Points {
     return true;
   }
 
-  _getFilteredEvents(events) {
+  _getFilteredEvents() {
+    const events = this._events;
     let filteredEvents = [];
 
     switch (this._filterType) {

@@ -24,3 +24,8 @@ export const FilterType = {
   PAST: `past`,
   DEFAULT: `default`,
 };
+
+export const RenderPosition = {
+  AFTERBEGIN: `afterbegin`,
+  BEFOREEND: `beforeend`
+};

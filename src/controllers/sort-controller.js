@@ -1,3 +1,4 @@
+import {RenderPosition} from "../const.js";
 import SortComponent from "../components/sort-component.js";
 import {render} from "../utils/dom.js";
 
@@ -7,6 +8,8 @@ export default class SortController {
     this._onChangeSort = onChangeSort;
 
     this._sortComponent = new SortComponent();
+
+    this.resetSorts = this.resetSorts.bind(this);
   }
 
   render() {
@@ -20,6 +23,14 @@ export default class SortController {
     });
 
     const tripEvents = document.querySelector(`.trip-events`);
-    render(tripEvents, this._sortComponent, `beforeend`);
+    render(tripEvents, this._sortComponent, RenderPosition.BEFOREEND);
+  }
+
+  resetSorts() {
+    const defaultSortButton = this._sortComponent.getElement().querySelector(`#sort-event`);
+
+    if (defaultSortButton) {
+      defaultSortButton.checked = true;
+    }
   }
 }
