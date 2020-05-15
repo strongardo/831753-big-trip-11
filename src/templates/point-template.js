@@ -34,12 +34,12 @@ export const createPointTemplate = (event) => {
   const capitalizeFirstLetterType = capitalizeFirstLetter(type);
   const headingPretext = getHeadingPretext(type);
   const destination = event.destination.name;
-  const dateFrom = event.date_from;
-  const dateTo = event.date_to;
+  const dateFrom = event.dateFrom;
+  const dateTo = event.dateTo;
   const dateFromMarkup = createTimeMarkup(dateFrom);
   const dateToMarkup = createTimeMarkup(dateTo);
   const duration = changeTimeFormat((dateTo - dateFrom) / 60000);
-  const price = event.base_price;
+  const price = event.basePrice;
   const offersMarkup = createOffersMarkup(event.offers);
 
   return (

@@ -49,6 +49,21 @@ export default class PointController {
     }
   }
 
+  formRender(newEvent) {
+    const destinations = this._eventsModel.getDestinations();
+    if (this._isIventOpened) {
+      const event = this._eventsModel.getEvent(this._eventId);
+      this._formComponent = new FormComponent(event, this._isThisNewEvent, destinations);
+      this._replaceEventToEdit();
+      this._isIventOpened = false;
+    } else {
+      const oldFormComponent = this._formComponent;
+      this._formComponent = new FormComponent(newEvent, this._isThisNewEvent, destinations);
+      replace(this._formComponent, oldFormComponent);
+    }
+    this._addFormHandlers();
+  }
+
   _onEditButtonClick() {
     this._closeOtherForms();
     this.formRender();
@@ -62,20 +77,6 @@ export default class PointController {
       this.render();
       this._removeOnEscKeyDownHandler();
     }
-  }
-
-  formRender(newEvent) {
-    if (this._isIventOpened) {
-      const event = this._eventsModel.getEvent(this._eventId);
-      this._formComponent = new FormComponent(event, this._isThisNewEvent);
-      this._replaceEventToEdit();
-      this._isIventOpened = false;
-    } else {
-      const oldFormComponent = this._formComponent;
-      this._formComponent = new FormComponent(newEvent, this._isThisNewEvent);
-      replace(this._formComponent, oldFormComponent);
-    }
-    this._addFormHandlers();
   }
 
   _replaceEventToEdit() {
@@ -118,6 +119,14 @@ export default class PointController {
 
   _onTypeChange(tripType) {
     this._temporaryEvent.type = tripType;
+    const offers = this._eventsModel.getOffers();
+    const possibleOffers = offers.find((it) => {
+      if (it.type === tripType) {
+        return true;
+      }
+      return false;
+    });
+    this._temporaryEvent.offers = possibleOffers.offers;
     this.formRender(this._temporaryEvent);
   }
 
@@ -126,18 +135,15 @@ export default class PointController {
   }
 
   _onPriceChange(price) {
-    // eslint-disable-next-line camelcase
-    this._temporaryEvent.base_price = price;
+    this._temporaryEvent.basePrice = price;
   }
 
   _onStartTimeChange(time) {
-    // eslint-disable-next-line camelcase
-    this._temporaryEvent.date_from = time;
+    this._temporaryEvent.dateFrom = time;
   }
 
   _onEndTimeChange(time) {
-    // eslint-disable-next-line camelcase
-    this._temporaryEvent.date_to = time;
+    this._temporaryEvent.dateTo = time;
   }
 
   _onDeleteBtnClick() {

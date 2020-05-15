@@ -29,13 +29,12 @@ const createTypesMarkup = (array) => {
   }).join(`\n`);
 };
 
-const createCitiesOptionsMarkup = (city) => {
-  return (
-    `<option value="${city}"></option>
-    <option value="Moscow"></option>
-    <option value="Saint Petersburg"></option>
-    <option value="Bishkek"></option>`
-  );
+const createCitiesOptionsMarkup = (destinations) => {
+  return destinations.map((city) => {
+    return (
+      `<option value="${city.name}"></option>`
+    );
+  }).join(`\n`);
 };
 
 const createOffersMarkup = (array, type) => {
@@ -102,17 +101,17 @@ const createExtraMarkup = (favoritecheckBoxCondition) => {
   );
 };
 
-export const createFormTemplate = (event, isThisNewEvent) => {
-  const price = event.base_price;
+export const createFormTemplate = (event, isThisNewEvent, destinations) => {
+  const price = event.basePrice;
   const type = event.type;
   const capitalizeFirstLetterType = capitalizeFirstLetter(type);
   const headingPretext = getHeadingPretext(type);
   const destination = event.destination.name;
   const transferTypesMarkup = createTypesMarkup(TRANSFER_TYPES);
   const activityTypesMarkup = createTypesMarkup(ACTIVITY_TYPES);
-  const citiesOptionsMarkup = createCitiesOptionsMarkup(destination);
-  const dateFrom = event.date_from;
-  const dateTo = event.date_to;
+  const citiesOptionsMarkup = createCitiesOptionsMarkup(destinations);
+  const dateFrom = event.dateFrom;
+  const dateTo = event.dateTo;
   const dateFromMarkup = createTimeMarkup(dateFrom);
   const dateToMarkup = createTimeMarkup(dateTo);
   const offersContainerMarkup = createOffersContainerMarkup(type, event);

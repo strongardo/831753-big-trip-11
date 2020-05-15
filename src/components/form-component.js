@@ -4,25 +4,26 @@ import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 
 export default class Form extends AbstractComponent {
-  constructor(event, isThisNewEvent = false) {
+  constructor(event, isThisNewEvent, destinations) {
     super();
 
     this._event = event;
     this._isThisNewEvent = isThisNewEvent;
+    this._destinations = destinations;
 
     this._flatpickrStart = null;
     this._flatpickrEnd = null;
     this._applyFlatpickrs();
 
-    this._startTime = this._event.date_from;
-    this._endTime = this._event.date_to;
+    this._startTime = this._event.dateFrom;
+    this._endTime = this._event.dateTo;
 
     this.setStartTimeChangeHandler = this.setStartTimeChangeHandler.bind(this);
     this.setEndTimeChangeHandler = this.setEndTimeChangeHandler.bind(this);
   }
 
   getTemplate() {
-    return createFormTemplate(this._event, this._isThisNewEvent);
+    return createFormTemplate(this._event, this._isThisNewEvent, this._destinations);
   }
 
   _applyFlatpickrs() {
@@ -38,14 +39,14 @@ export default class Form extends AbstractComponent {
     this.flatpickrStart = flatpickr(dateStartElement, {
       altInput: false,
       allowInput: false,
-      defaultDate: this._event.date_from || `today`,
+      defaultDate: this._event.dateFrom || `today`,
       enableTime: true,
       dateFormat: `d/m/y H:i`,
     });
     this.flatpickrEnd = flatpickr(dateEndElement, {
       altInput: false,
       allowInput: false,
-      defaultDate: this._event.date_to || `today`,
+      defaultDate: this._event.dateTo || `today`,
       enableTime: true,
       dateFormat: `d/m/y H:i`,
     });

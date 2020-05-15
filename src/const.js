@@ -29,3 +29,29 @@ export const RenderPosition = {
   AFTERBEGIN: `afterbegin`,
   BEFOREEND: `beforeend`
 };
+
+export const eventTemplate = {
+  "basePrice": 0,
+  "dateFrom": ``,
+  "dateTo": ``,
+  "destination": {
+    "description": ``,
+    "name": `Some city`,
+    "pictures": [{
+      "src": `https://picsum.photos/200`,
+      "description": `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
+    }],
+  },
+  "id": 0,
+  "isFavorite": false,
+  "offers": [
+    {
+      "title": `Choose meal`,
+      "price": 0
+    }, {
+      "title": `Upgrade to comfort class`,
+      "price": 0
+    }
+  ],
+  "type": `taxi`,
+};

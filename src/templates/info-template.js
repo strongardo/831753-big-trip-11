@@ -16,8 +16,8 @@ export const createInfoTemplate = (events) => {
 
     const getDates = () => {
 
-      const firstDate = events[INDEX_FOR_FIRST_EVENT].date_from;
-      const lastDate = events[events.length - 1].date_from;
+      const firstDate = events[INDEX_FOR_FIRST_EVENT].dateFrom;
+      const lastDate = events[events.length - 1].dateFrom;
 
       const firstDateMonth = MONTHS[firstDate.getMonth()];
       const firstDateDay = firstDate.getDate();

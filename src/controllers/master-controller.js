@@ -36,7 +36,6 @@ export default class MasterController {
   }
 
   render() {
-    // Где лучше повесить обработчик на кнопку добавления новой точки маршрута?
     this._addBtn.addEventListener(`click`, this._onAddBtnClick);
 
     this._renderStatistic();
@@ -46,13 +45,9 @@ export default class MasterController {
 
     const events = this._eventsModel.getAllEvents();
 
-    if (!events.length) {
-      this._renderStub();
-    } else {
-      this._renderSort();
-      this._renderDaysList();
-      this._renderDays(events);
-    }
+    this._renderSort();
+    this._renderDaysList();
+    this._renderDays(events);
   }
 
   _onAddBtnClick() {
@@ -106,6 +101,10 @@ export default class MasterController {
   }
 
   _renderDays(events) {
+    if (!events.length) {
+      this._renderStub();
+      return;
+    }
     const days = this._getDays(events);
     days.forEach((day, i) => {
       const dayComponent = new DayComponent(i + 1, day); // Номер дня не может быть нулем, поэтому +1
@@ -115,13 +114,13 @@ export default class MasterController {
   }
 
   _getDays(events) {
-    let currentDay = events[START_INDEX_FOR_EVENTS].date_from.getDate();
-    const days = [events[START_INDEX_FOR_EVENTS].date_from];
+    let currentDay = events[START_INDEX_FOR_EVENTS].dateFrom.getDate();
+    const days = [events[START_INDEX_FOR_EVENTS].dateFrom];
 
     for (const item of events) {
-      if (item.date_from.getDate() !== currentDay) {
-        days.push(item.date_from);
-        currentDay = item.date_from.getDate();
+      if (item.dateFrom.getDate() !== currentDay) {
+        days.push(item.dateFrom);
+        currentDay = item.dateFrom.getDate();
       }
     }
     return days;
@@ -129,7 +128,7 @@ export default class MasterController {
 
   _getThisDayEvents(day, events) {
     return events.filter((item) => {
-      return item.date_from.getDate() === day.getDate();
+      return item.dateFrom.getDate() === day.getDate();
     });
   }
 
