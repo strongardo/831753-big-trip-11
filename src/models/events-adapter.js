@@ -1,20 +1,47 @@
+const parseToBack = (data) => {
+  return {
+    "base_price": Number(data.basePrice),
+    "date_from": data.dateFrom,
+    "date_to": data.dateTo,
+    "destination": data.destination,
+    "id": data.id,
+    "is_favorite": data.isFavorite,
+    "offers": data.offers,
+    "type": data.type,
+  };
+};
+
+const parseToFront = (data) => {
+  return {
+    basePrice: data[`base_price`],
+    dateFrom: new Date(data[`date_from`]),
+    dateTo: new Date(data[`date_to`]),
+    destination: data[`destination`],
+    id: data[`id`],
+    isFavorite: Boolean(data[`is_favorite`]),
+    offers: data[`offers`],
+    type: data[`type`],
+  };
+};
+
 export default class Event {
-  constructor(data) {
-    this.basePrice = data[`base_price`];
-    this.dateFrom = new Date(data[`date_from`]);
-    this.dateTo = new Date(data[`date_to`]);
-    this.destination = data[`destination`];
-    this.id = data[`id`];
-    this.isFavorite = Boolean(data[`is_favorite`]);
-    this.offers = data[`offers`];
-    this.type = data[`type`];
+  parseEventsToFront(events) {
+    return events.map((event) => {
+      return parseToFront(event);
+    });
   }
 
-  static parseEvent(data) {
-    return new Event(data);
+  parseEventToFront(event) {
+    return parseToFront(event);
   }
 
-  static parseEvents(data) {
-    return data.map(Event.parseEvent);
+  parseEventsToBack(events) {
+    return events.map((event) => {
+      return parseToBack(event);
+    });
+  }
+
+  parseEventToBack(event) {
+    return parseToBack(event);
   }
 }

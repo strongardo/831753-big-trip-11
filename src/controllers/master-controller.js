@@ -10,8 +10,9 @@ import DayComponent from "../components/day-component.js";
 import {render} from "../utils/dom.js";
 
 export default class MasterController {
-  constructor(model) {
+  constructor(model, api) {
     this._eventsModel = model;
+    this._api = api;
 
     this._stubComponent = new StubComponent();
     this._statisticComponent = new StatisticComponent(this._eventsModel);
@@ -58,7 +59,7 @@ export default class MasterController {
       container = this._container;
     }
     const eventId = this._eventsModel.createNewEvent();
-    const pointController = new PointController(container, RenderPosition.AFTERBEGIN, this._eventsModel, eventId, this._closeAllForms, this._reRenderDays, true, this._toggleAddBtnStatus);
+    const pointController = new PointController(container, RenderPosition.AFTERBEGIN, this._eventsModel, eventId, this._closeAllForms, this._reRenderDays, true, this._toggleAddBtnStatus, this._api);
     this._observer.push(pointController);
     pointController.render();
     pointController.formRender();
@@ -137,7 +138,7 @@ export default class MasterController {
     const day = dayComponent.getElement();
     const tripEventsList = day.querySelector(`.trip-events__list`);
     events.forEach((event) => {
-      const pointController = new PointController(tripEventsList, RenderPosition.BEFOREEND, this._eventsModel, event.id, this._closeAllForms, this._reRenderDays, false);
+      const pointController = new PointController(tripEventsList, RenderPosition.BEFOREEND, this._eventsModel, event.id, this._closeAllForms, this._reRenderDays, false, this._toggleAddBtnStatus, this._api);
       this._observer.push(pointController);
       pointController.render();
     });

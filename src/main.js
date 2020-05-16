@@ -25,7 +25,7 @@ api.getEvents()
     eventsModel.setEvents(events);
 
     const headerController = new HeaderController(eventsModel);
-    const masterController = new MasterController(eventsModel);
+    const masterController = new MasterController(eventsModel, api);
 
     headerController.render();
     masterController.render();

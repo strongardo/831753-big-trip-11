@@ -3,7 +3,7 @@ import FormComponent from "../components/form-component.js";
 import {render, replace} from "../utils/dom.js";
 
 export default class PointController {
-  constructor(container, place, model, id, closeOtherForms, onChangeEvents, isThisNewEvent, toggleAddBtnStatus) {
+  constructor(container, place, model, id, closeOtherForms, onChangeEvents, isThisNewEvent, toggleAddBtnStatus, api) {
     this._container = container;
     this._place = place;
     this._eventsModel = model;
@@ -12,6 +12,7 @@ export default class PointController {
     this._onChangeEvents = onChangeEvents;
     this._isThisNewEvent = isThisNewEvent;
     this._toggleAddBtnStatus = toggleAddBtnStatus;
+    this._api = api;
 
     this._isIventOpened = false;
 
@@ -20,7 +21,6 @@ export default class PointController {
 
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
-    this._onFormSubmit = this._onFormSubmit.bind(this);
     this._onCloseButtonClick = this._onCloseButtonClick.bind(this);
     this._onFavoriteChange = this._onFavoriteChange.bind(this);
     this._onTypeChange = this._onTypeChange.bind(this);
@@ -99,15 +99,6 @@ export default class PointController {
     this._formComponent.setCityKeypressHandler();
   }
 
-  _onFormSubmit(evt) {
-    evt.preventDefault();
-    this.render();
-    this._removeOnEscKeyDownHandler();
-    if (this._isThisNewEvent) {
-      this._toggleAddBtnStatus();
-    }
-  }
-
   _onCloseButtonClick() {
     this.render();
     this._removeOnEscKeyDownHandler();
@@ -160,9 +151,12 @@ export default class PointController {
     const newEvent = this._temporaryEvent;
 
     if (newEvent) {
-      this._eventsModel.updateEvent(this._eventId, newEvent);
-      this._temporaryEvent = null;
-      this._onChangeEvents();
+      this._api.updateEvent(this._eventId, newEvent)
+        .then((eventFromServer) => {
+          this._eventsModel.updateEvent(this._eventId, eventFromServer);
+          this._temporaryEvent = null;
+          this._onChangeEvents();
+        });
     } else {
       this.render();
     }
