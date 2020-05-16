@@ -56,6 +56,35 @@ const API = class {
       .then((response) => response.json())
       .then(this._adapter.parseEventToFront);
   }
+
+  createEvent(data) {
+    const headers = new Headers();
+    headers.append(`Authorization`, this._authorization);
+    headers.append(`Content-Type`, `application/json`);
+
+    console.log(this._adapter.parseEventToBack(data));
+
+    return fetch(`https://11.ecmascript.pages.academy/big-trip/points`, {
+      method: `POST`,
+      body: JSON.stringify(this._adapter.parseEventToBack(data)),
+      headers,
+    })
+      .then(this._checkStatus)
+      .then((response) => response.json())
+      .then(this._adapter.parseEventToFront);
+  }
+
+  deleteEvent(id) {
+    const headers = new Headers();
+    headers.append(`Authorization`, this._authorization);
+    headers.append(`Content-Type`, `application/json`);
+
+    return fetch(`https://11.ecmascript.pages.academy/big-trip/points/${id}`, {
+      method: `DELETE`,
+      headers,
+    })
+      .then(this._checkStatus);
+  }
 };
 
 export default API;

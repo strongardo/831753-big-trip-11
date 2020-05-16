@@ -58,11 +58,10 @@ export default class MasterController {
     if (!container) {
       container = this._container;
     }
-    const eventId = this._eventsModel.createNewEvent();
-    const pointController = new PointController(container, RenderPosition.AFTERBEGIN, this._eventsModel, eventId, this._closeAllForms, this._reRenderDays, true, this._toggleAddBtnStatus, this._api);
+    const pointController = new PointController(container, RenderPosition.AFTERBEGIN, this._eventsModel, 9999, this._closeAllForms, this._reRenderDays, true, this._toggleAddBtnStatus, this._api);
     this._observer.push(pointController);
-    pointController.render();
-    pointController.formRender();
+    const newEvent = this._eventsModel.createNewEvent();
+    pointController.formRender(newEvent);
   }
 
   _renderStatistic() {

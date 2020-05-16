@@ -3,13 +3,13 @@ import FormComponent from "../components/form-component.js";
 import {render, replace} from "../utils/dom.js";
 
 export default class PointController {
-  constructor(container, place, model, id, closeOtherForms, onChangeEvents, isThisNewEvent, toggleAddBtnStatus, api) {
+  constructor(container, place, model, id, closeOtherForms, reRenderPoints, isThisNewEvent, toggleAddBtnStatus, api) {
     this._container = container;
     this._place = place;
     this._eventsModel = model;
     this._eventId = id;
     this._closeOtherForms = closeOtherForms;
-    this._onChangeEvents = onChangeEvents;
+    this._reRenderPoints = reRenderPoints;
     this._isThisNewEvent = isThisNewEvent;
     this._toggleAddBtnStatus = toggleAddBtnStatus;
     this._api = api;
@@ -36,8 +36,8 @@ export default class PointController {
 
   render() {
     if (!this._isIventOpened) {
-      this._isIventOpened = true;
       const event = this._eventsModel.getEvent(this._eventId);
+
       this._pointComponent = new PointComponent(event);
       this._pointComponent.setEditButtonClickHandler(this._onEditButtonClick);
 
@@ -46,20 +46,26 @@ export default class PointController {
         return;
       }
       render(this._container, this._pointComponent, this._place);
+      this._isIventOpened = true;
     }
   }
 
   formRender(newEvent) {
     const destinations = this._eventsModel.getDestinations();
     if (this._isIventOpened) {
-      const event = this._eventsModel.getEvent(this._eventId);
+      let event = this._eventsModel.getEvent(this._eventId);
+
       this._formComponent = new FormComponent(event, this._isThisNewEvent, destinations);
       this._replaceEventToEdit();
       this._isIventOpened = false;
     } else {
-      const oldFormComponent = this._formComponent;
       this._formComponent = new FormComponent(newEvent, this._isThisNewEvent, destinations);
-      replace(this._formComponent, oldFormComponent);
+      if (this._isThisNewEvent) {
+        render(this._container, this._formComponent, this._place);
+      } else {
+        const oldFormComponent = this._formComponent;
+        replace(this._formComponent, oldFormComponent);
+      }
     }
     this._addFormHandlers();
   }
@@ -137,34 +143,43 @@ export default class PointController {
     this._temporaryEvent.dateTo = time;
   }
 
-  _onDeleteBtnClick() {
-    this._eventsModel.deleteEvent(this._eventId);
-    this._onChangeEvents();
+  _onChangeEvent(event) {
+    if (event) {
+      this._eventsModel.updateEvent(this._eventId, event);
+    } else {
+      this._eventsModel.deleteEvent(this._eventId);
+    }
+    this._temporaryEvent = null;
     this._removeOnEscKeyDownHandler();
+    this._reRenderPoints();
+  }
+
+  _onDeleteBtnClick() {
     if (this._isThisNewEvent) {
+      this._onChangeEvent();
       this._toggleAddBtnStatus();
+    } else {
+      this._api.deleteEvent(this._eventId)
+      .then(() => {
+        this._onChangeEvent();
+      });
     }
   }
 
   _onSaveBtnClick(evt) {
     evt.preventDefault();
-    const newEvent = this._temporaryEvent;
-
-    if (newEvent) {
-      this._api.updateEvent(this._eventId, newEvent)
-        .then((eventFromServer) => {
-          this._eventsModel.updateEvent(this._eventId, eventFromServer);
-          this._temporaryEvent = null;
-          this._onChangeEvents();
-        });
-    } else {
-      this.render();
-    }
-
-    this._removeOnEscKeyDownHandler();
 
     if (this._isThisNewEvent) {
-      this._toggleAddBtnStatus();
+      this._api.createEvent(this._temporaryEvent)
+        .then((eventFromServer) => {
+          this._onChangeEvent(eventFromServer);
+          this._toggleAddBtnStatus();
+        });
+    } else {
+      this._api.updateEvent(this._eventId, this._temporaryEvent)
+        .then((eventFromServer) => {
+          this._onChangeEvent(eventFromServer);
+        });
     }
   }
 

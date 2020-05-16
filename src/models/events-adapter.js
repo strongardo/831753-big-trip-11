@@ -1,10 +1,9 @@
 const parseToBack = (data) => {
   return {
     "base_price": Number(data.basePrice),
-    "date_from": data.dateFrom,
-    "date_to": data.dateTo,
+    "date_from": data.dateFrom.toISOString(),
+    "date_to": data.dateTo.toISOString(),
     "destination": data.destination,
-    "id": data.id,
     "is_favorite": data.isFavorite,
     "offers": data.offers,
     "type": data.type,

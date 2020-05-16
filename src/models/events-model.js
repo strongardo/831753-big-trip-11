@@ -62,14 +62,11 @@ export default class Points {
   }
 
   createNewEvent() {
-    const newId = this._events.length;
-    const today = new Date();
     const newEvent = Object.assign({}, eventTemplate);
+    const today = new Date();
     newEvent.dateFrom = today;
     newEvent.dateTo = today;
-    newEvent.id = newId;
-    this._events.push(newEvent);
-    return newId;
+    return newEvent;
   }
 
   deleteEvent(id) {
