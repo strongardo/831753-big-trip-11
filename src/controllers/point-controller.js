@@ -209,7 +209,6 @@ export default class PointController {
     if (this._isThisNewEvent) {
       this._api.createEvent(this._temporaryEvent)
         .then((eventFromServer) => {
-          console.log(eventFromServer);
           this._onChangeEvent(eventFromServer);
           this._toggleAddBtnStatus();
         })
