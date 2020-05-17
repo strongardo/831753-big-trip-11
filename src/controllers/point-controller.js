@@ -3,15 +3,16 @@ import FormComponent from "../components/form-component.js";
 import {render, replace} from "../utils/dom.js";
 
 export default class PointController {
-  constructor(container, place, model, id, closeOtherForms, onChangeEvents, isThisNewEvent, toggleAddBtnStatus) {
+  constructor(container, place, model, id, closeOtherForms, reRenderPoints, isThisNewEvent, toggleAddBtnStatus, api) {
     this._container = container;
     this._place = place;
     this._eventsModel = model;
     this._eventId = id;
     this._closeOtherForms = closeOtherForms;
-    this._onChangeEvents = onChangeEvents;
+    this._reRenderPoints = reRenderPoints;
     this._isThisNewEvent = isThisNewEvent;
     this._toggleAddBtnStatus = toggleAddBtnStatus;
+    this._api = api;
 
     this._isIventOpened = false;
 
@@ -20,7 +21,6 @@ export default class PointController {
 
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
-    this._onFormSubmit = this._onFormSubmit.bind(this);
     this._onCloseButtonClick = this._onCloseButtonClick.bind(this);
     this._onFavoriteChange = this._onFavoriteChange.bind(this);
     this._onTypeChange = this._onTypeChange.bind(this);
@@ -31,22 +31,52 @@ export default class PointController {
     this._onStartTimeChange = this._onStartTimeChange.bind(this);
     this._onEndTimeChange = this._onEndTimeChange.bind(this);
 
-    this._temporaryEvent = Object.assign({}, this._eventsModel.getEvent(this._eventId));
+    if (!this._isThisNewEvent) {
+      this._temporaryEvent = Object.assign({}, this._eventsModel.getEvent(this._eventId));
+    } else {
+      this._temporaryEvent = Object.assign({}, this._eventsModel.createNewEvent());
+    }
   }
 
   render() {
     if (!this._isIventOpened) {
-      this._isIventOpened = true;
-      const event = this._eventsModel.getEvent(this._eventId);
+      let event = this._eventsModel.getEvent(this._eventId);
+
+      if (this._isThisNewEvent) {
+        event = this._eventsModel.createNewEvent();
+      }
+
       this._pointComponent = new PointComponent(event);
       this._pointComponent.setEditButtonClickHandler(this._onEditButtonClick);
 
       if (this._formComponent) {
         this._replaceEditToEvent();
+        this._isIventOpened = true;
         return;
       }
       render(this._container, this._pointComponent, this._place);
+      this._isIventOpened = true;
     }
+  }
+
+  formRender(newEvent) {
+    const destinations = this._eventsModel.getDestinations();
+    if (this._isIventOpened) {
+      let event = this._eventsModel.getEvent(this._eventId);
+
+      if (this._isThisNewEvent) {
+        event = this._eventsModel.createNewEvent();
+      }
+
+      this._formComponent = new FormComponent(event, this._isThisNewEvent, destinations);
+      this._replaceEventToEdit();
+      this._isIventOpened = false;
+    } else {
+      const oldFormComponent = this._formComponent;
+      this._formComponent = new FormComponent(newEvent, this._isThisNewEvent, destinations);
+      replace(this._formComponent, oldFormComponent);
+    }
+    this._addFormHandlers();
   }
 
   _onEditButtonClick() {
@@ -62,20 +92,6 @@ export default class PointController {
       this.render();
       this._removeOnEscKeyDownHandler();
     }
-  }
-
-  formRender(newEvent) {
-    if (this._isIventOpened) {
-      const event = this._eventsModel.getEvent(this._eventId);
-      this._formComponent = new FormComponent(event, this._isThisNewEvent);
-      this._replaceEventToEdit();
-      this._isIventOpened = false;
-    } else {
-      const oldFormComponent = this._formComponent;
-      this._formComponent = new FormComponent(newEvent, this._isThisNewEvent);
-      replace(this._formComponent, oldFormComponent);
-    }
-    this._addFormHandlers();
   }
 
   _replaceEventToEdit() {
@@ -98,15 +114,6 @@ export default class PointController {
     this._formComponent.setCityKeypressHandler();
   }
 
-  _onFormSubmit(evt) {
-    evt.preventDefault();
-    this.render();
-    this._removeOnEscKeyDownHandler();
-    if (this._isThisNewEvent) {
-      this._toggleAddBtnStatus();
-    }
-  }
-
   _onCloseButtonClick() {
     this.render();
     this._removeOnEscKeyDownHandler();
@@ -118,6 +125,14 @@ export default class PointController {
 
   _onTypeChange(tripType) {
     this._temporaryEvent.type = tripType;
+    const offers = this._eventsModel.getOffers();
+    const possibleOffers = offers.find((it) => {
+      if (it.type === tripType) {
+        return true;
+      }
+      return false;
+    });
+    this._temporaryEvent.offers = possibleOffers.offers;
     this.formRender(this._temporaryEvent);
   }
 
@@ -126,45 +141,88 @@ export default class PointController {
   }
 
   _onPriceChange(price) {
-    // eslint-disable-next-line camelcase
-    this._temporaryEvent.base_price = price;
+    this._temporaryEvent.basePrice = price;
   }
 
   _onStartTimeChange(time) {
-    // eslint-disable-next-line camelcase
-    this._temporaryEvent.date_from = time;
+    this._temporaryEvent.dateFrom = time;
   }
 
   _onEndTimeChange(time) {
-    // eslint-disable-next-line camelcase
-    this._temporaryEvent.date_to = time;
+    this._temporaryEvent.dateTo = time;
   }
 
-  _onDeleteBtnClick() {
-    this._eventsModel.deleteEvent(this._eventId);
-    this._onChangeEvents();
+  _onChangeEvent(event) {
+    if (event) {
+      this._eventsModel.updateEvent(this._eventId, event);
+    } else {
+      this._eventsModel.deleteEvent(this._eventId);
+    }
+    this._temporaryEvent = null;
     this._removeOnEscKeyDownHandler();
+    this._reRenderPoints();
+  }
+
+  _onError(elem) {
+    this._toggleFormStatus(elem);
+    elem.classList.add(`shake`);
+    elem.style.border = `1px solid red`;
+  }
+
+  _toggleFormStatus(form) {
+    form.querySelectorAll(`input, button`)
+      .forEach((elem) => {
+        elem.disabled = !elem.disabled;
+      });
+  }
+
+  _onDeleteBtnClick(evt) {
     if (this._isThisNewEvent) {
-      this._toggleAddBtnStatus();
+      this._closeOtherForms();
+    } else {
+      const form = this._formComponent.getElement();
+      form.style.border = ``;
+      evt.target.innerText = `Deleting…`;
+      this._api.deleteEvent(this._eventId)
+      .then(() => {
+        this._onChangeEvent();
+      })
+      .catch(() => {
+        evt.target.innerText = `Delete`;
+        this._onError(form);
+      });
     }
   }
 
   _onSaveBtnClick(evt) {
     evt.preventDefault();
-    const newEvent = this._temporaryEvent;
+    const form = this._formComponent.getElement();
+    form.style.border = ``;
+    this._toggleFormStatus(form);
+    evt.target.innerText = `Saving…`;
 
-    if (newEvent) {
-      this._eventsModel.updateEvent(this._eventId, newEvent);
-      this._temporaryEvent = null;
-      this._onChangeEvents();
-    } else {
-      this.render();
-    }
-
-    this._removeOnEscKeyDownHandler();
+    const onSaveError = () => {
+      evt.target.innerText = `Save`;
+      this._onError(form);
+    };
 
     if (this._isThisNewEvent) {
-      this._toggleAddBtnStatus();
+      this._api.createEvent(this._temporaryEvent)
+        .then((eventFromServer) => {
+          this._onChangeEvent(eventFromServer);
+          this._toggleAddBtnStatus();
+        })
+        .catch(() => {
+          onSaveError();
+        });
+    } else {
+      this._api.updateEvent(this._eventId, this._temporaryEvent)
+        .then((eventFromServer) => {
+          this._onChangeEvent(eventFromServer);
+        })
+        .catch(() => {
+          onSaveError();
+        });
     }
   }
 

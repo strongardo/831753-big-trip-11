@@ -29,3 +29,28 @@ export const RenderPosition = {
   AFTERBEGIN: `afterbegin`,
   BEFOREEND: `beforeend`
 };
+
+export const eventTemplate = {
+  "basePrice": 222,
+  "dateFrom": ``,
+  "dateTo": ``,
+  "destination": {
+    "description": `Chamonix, is a beautiful city, a true asian pearl, with crowded streets.`,
+    "name": `Chamonix`,
+    "pictures": [{
+      "src": `http://picsum.photos/300/200?r=0.0762563005163317`,
+      "description": `Chamonix parliament building`,
+    }],
+  },
+  "isFavorite": false,
+  "offers": [
+    {
+      "title": `Choose meal`,
+      "price": 180
+    }, {
+      "title": `Upgrade to comfort class`,
+      "price": 50
+    }
+  ],
+  "type": `taxi`,
+};

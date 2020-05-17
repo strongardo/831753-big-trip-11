@@ -40,7 +40,7 @@ export const calculateCostOfType = (events, type) => {
   let cost = 0;
   events.forEach((event) => {
     if (event.type === type) {
-      cost += event.base_price;
+      cost += event.basePrice;
     }
   });
   return cost;
@@ -60,8 +60,8 @@ export const calculateDurationOfType = (events, type) => {
   let duration = 0;
   events.forEach((event) => {
     if (event.type === type) {
-      const dateFrom = event.date_from;
-      const dateTo = event.date_to;
+      const dateFrom = event.dateFrom;
+      const dateTo = event.dateTo;
       const difference = Math.round((dateTo - dateFrom) / 3600000);
       duration += difference;
     }

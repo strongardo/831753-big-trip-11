@@ -1,10 +1,28 @@
-import {FilterType, SortType} from "../const.js";
+import {FilterType, SortType, eventTemplate} from "../const.js";
 
 export default class Points {
   constructor() {
     this._events = [];
+    this._destinations = [];
+    this._offers = [];
 
     this._filterType = FilterType.DEFAULT;
+  }
+
+  setOffers(offers) {
+    this._offers = offers;
+  }
+
+  getOffers() {
+    return this._offers;
+  }
+
+  setDestinations(destinations) {
+    this._destinations = destinations;
+  }
+
+  getDestinations() {
+    return this._destinations;
   }
 
   setEvents(events) {
@@ -15,16 +33,11 @@ export default class Points {
     return this._events;
   }
 
-  // Возвращает отсортированные события, учитывая текущий тип фильтра.
-  // В ТЗ явно об этом сказано, но похоже так логичнее. Или не нужно фильтровать?
   getSortedEvents(sortType) {
     const events = this._getFilteredEvents();
     return this._getSortedEvents(events, sortType);
   }
 
-  // Возвращает отфильтрованные события, НЕ учитывая текущий тип сортировки.
-  // В ТЗ сказано: "При смене фильтра разбивка по дням сохраняется",
-  // значит сортировка тут не нужна, при которой разбивки нет. Так?
   getFilteredEvents(filterType) {
     this._filterType = filterType;
     return this._getFilteredEvents();
@@ -39,46 +52,19 @@ export default class Points {
   updateEvent(id, newEvent) {
     const index = this._events.findIndex((it) => it.id === id);
 
-    if (index === -1) {
-      return false;
+    if (index !== -1) {
+      this._events = [].concat(this._events.slice(0, index), newEvent, this._events.slice(index + 1));
+    } else {
+      this._events.push(newEvent);
     }
-
-    this._events = [].concat(this._events.slice(0, index), newEvent, this._events.slice(index + 1));
-
-    return true;
   }
 
-  // Добавляет новое событие в events. Ничего лучше не придумал, как хранить тут шаблон.
-  // Или есть интереснее варианты?
   createNewEvent() {
-    const newId = this._events.length;
-    const newEvent = {
-      "base_price": 0,
-      "date_from": new Date(),
-      "date_to": new Date(),
-      "destination": {
-        "description": ``,
-        "name": `Some city`,
-        "pictures": [{
-          "src": `https://picsum.photos/200`,
-          "description": `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
-        }],
-      },
-      "id": newId,
-      "is_favorite": false,
-      "offers": [
-        {
-          "title": `Choose meal`,
-          "price": 180
-        }, {
-          "title": `Upgrade to comfort class`,
-          "price": 50
-        }
-      ],
-      "type": `taxi`,
-    };
-    this._events.push(newEvent);
-    return newId;
+    const newEvent = Object.assign({}, eventTemplate);
+    const today = new Date();
+    newEvent.dateFrom = today;
+    newEvent.dateTo = today;
+    return newEvent;
   }
 
   deleteEvent(id) {
@@ -100,12 +86,12 @@ export default class Points {
     switch (this._filterType) {
       case FilterType.FUTURE:
         filteredEvents = events.filter((event) => {
-          return event.date_from > new Date();
+          return event.dateFrom > new Date();
         });
         break;
       case FilterType.PAST:
         filteredEvents = events.filter((event) => {
-          return event.date_to < new Date();
+          return event.dateTo < new Date();
         });
         break;
       case FilterType.DEFAULT:
@@ -122,10 +108,10 @@ export default class Points {
 
     switch (sortType) {
       case SortType.TIME:
-        sortedEvents = eventsCopy.sort((a, b) => (b.date_to - b.date_from) - (a.date_to - a.date_from));
+        sortedEvents = eventsCopy.sort((a, b) => (b.dateTo - b.dateFrom) - (a.dateTo - a.dateFrom));
         break;
       case SortType.PRICE:
-        sortedEvents = eventsCopy.sort((a, b) => b.base_price - a.base_price);
+        sortedEvents = eventsCopy.sort((a, b) => b.basePrice - a.basePrice);
         break;
       case SortType.DEFAULT:
         sortedEvents = eventsCopy;

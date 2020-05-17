@@ -10,8 +10,9 @@ import DayComponent from "../components/day-component.js";
 import {render} from "../utils/dom.js";
 
 export default class MasterController {
-  constructor(model) {
+  constructor(model, api) {
     this._eventsModel = model;
+    this._api = api;
 
     this._stubComponent = new StubComponent();
     this._statisticComponent = new StatisticComponent(this._eventsModel);
@@ -36,7 +37,6 @@ export default class MasterController {
   }
 
   render() {
-    // Где лучше повесить обработчик на кнопку добавления новой точки маршрута?
     this._addBtn.addEventListener(`click`, this._onAddBtnClick);
 
     this._renderStatistic();
@@ -46,13 +46,9 @@ export default class MasterController {
 
     const events = this._eventsModel.getAllEvents();
 
-    if (!events.length) {
-      this._renderStub();
-    } else {
-      this._renderSort();
-      this._renderDaysList();
-      this._renderDays(events);
-    }
+    this._renderSort();
+    this._renderDaysList();
+    this._renderDays(events);
   }
 
   _onAddBtnClick() {
@@ -62,8 +58,7 @@ export default class MasterController {
     if (!container) {
       container = this._container;
     }
-    const eventId = this._eventsModel.createNewEvent();
-    const pointController = new PointController(container, RenderPosition.AFTERBEGIN, this._eventsModel, eventId, this._closeAllForms, this._reRenderDays, true, this._toggleAddBtnStatus);
+    const pointController = new PointController(container, RenderPosition.AFTERBEGIN, this._eventsModel, 9999, this._closeAllForms, this._reRenderDays, true, this._toggleAddBtnStatus, this._api);
     this._observer.push(pointController);
     pointController.render();
     pointController.formRender();
@@ -106,6 +101,10 @@ export default class MasterController {
   }
 
   _renderDays(events) {
+    if (!events.length) {
+      this._renderStub();
+      return;
+    }
     const days = this._getDays(events);
     days.forEach((day, i) => {
       const dayComponent = new DayComponent(i + 1, day); // Номер дня не может быть нулем, поэтому +1
@@ -115,13 +114,13 @@ export default class MasterController {
   }
 
   _getDays(events) {
-    let currentDay = events[START_INDEX_FOR_EVENTS].date_from.getDate();
-    const days = [events[START_INDEX_FOR_EVENTS].date_from];
+    let currentDay = events[START_INDEX_FOR_EVENTS].dateFrom.getDate();
+    const days = [events[START_INDEX_FOR_EVENTS].dateFrom];
 
     for (const item of events) {
-      if (item.date_from.getDate() !== currentDay) {
-        days.push(item.date_from);
-        currentDay = item.date_from.getDate();
+      if (item.dateFrom.getDate() !== currentDay) {
+        days.push(item.dateFrom);
+        currentDay = item.dateFrom.getDate();
       }
     }
     return days;
@@ -129,7 +128,7 @@ export default class MasterController {
 
   _getThisDayEvents(day, events) {
     return events.filter((item) => {
-      return item.date_from.getDate() === day.getDate();
+      return item.dateFrom.getDate() === day.getDate();
     });
   }
 
@@ -138,15 +137,20 @@ export default class MasterController {
     const day = dayComponent.getElement();
     const tripEventsList = day.querySelector(`.trip-events__list`);
     events.forEach((event) => {
-      const pointController = new PointController(tripEventsList, RenderPosition.BEFOREEND, this._eventsModel, event.id, this._closeAllForms, this._reRenderDays, false);
+      const pointController = new PointController(tripEventsList, RenderPosition.BEFOREEND, this._eventsModel, event.id, this._closeAllForms, this._reRenderDays, false, this._toggleAddBtnStatus, this._api);
       this._observer.push(pointController);
       pointController.render();
     });
   }
 
   _closeAllForms() {
-    this._observer.forEach((pointController) => {
+    this._observer.forEach((pointController, index) => {
       pointController.render();
+      if (pointController._isThisNewEvent) {
+        pointController._pointComponent.removeElement();
+        this._observer.splice(index, index);
+        this._toggleAddBtnStatus();
+      }
     });
   }
 
