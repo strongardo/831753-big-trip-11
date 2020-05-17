@@ -3,10 +3,12 @@ import FormComponent from "../components/form-component.js";
 import {render, replace} from "../utils/dom.js";
 
 export default class PointController {
-  constructor(container, place, model, id, closeOtherForms, reRenderPoints, isThisNewEvent, toggleAddBtnStatus, api) {
+  constructor(container, place, eventsModel, destinationsModel, offersModel, id, closeOtherForms, reRenderPoints, isThisNewEvent, toggleAddBtnStatus, api) {
     this._container = container;
     this._place = place;
-    this._eventsModel = model;
+    this._eventsModel = eventsModel;
+    this._destinationsModel = destinationsModel;
+    this._offersModel = offersModel;
     this._eventId = id;
     this._closeOtherForms = closeOtherForms;
     this._reRenderPoints = reRenderPoints;
@@ -60,7 +62,7 @@ export default class PointController {
   }
 
   formRender(newEvent) {
-    const destinations = this._eventsModel.getDestinations();
+    const destinations = this._destinationsModel.getDestinations();
     if (this._isIventOpened) {
       let event = this._eventsModel.getEvent(this._eventId);
 
@@ -124,15 +126,9 @@ export default class PointController {
   }
 
   _onTypeChange(tripType) {
+    const possibleOffers = this._offersModel.getPossibleOffers(tripType);
+    this._temporaryEvent.offers = possibleOffers;
     this._temporaryEvent.type = tripType;
-    const offers = this._eventsModel.getOffers();
-    const possibleOffers = offers.find((it) => {
-      if (it.type === tripType) {
-        return true;
-      }
-      return false;
-    });
-    this._temporaryEvent.offers = possibleOffers.offers;
     this.formRender(this._temporaryEvent);
   }
 

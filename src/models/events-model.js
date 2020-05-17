@@ -3,26 +3,8 @@ import {FilterType, SortType, eventTemplate} from "../const.js";
 export default class Points {
   constructor() {
     this._events = [];
-    this._destinations = [];
-    this._offers = [];
 
     this._filterType = FilterType.DEFAULT;
-  }
-
-  setOffers(offers) {
-    this._offers = offers;
-  }
-
-  getOffers() {
-    return this._offers;
-  }
-
-  setDestinations(destinations) {
-    this._destinations = destinations;
-  }
-
-  getDestinations() {
-    return this._destinations;
   }
 
   setEvents(events) {
