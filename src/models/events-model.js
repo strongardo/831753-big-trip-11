@@ -52,13 +52,11 @@ export default class Points {
   updateEvent(id, newEvent) {
     const index = this._events.findIndex((it) => it.id === id);
 
-    if (index === -1) {
-      return false;
+    if (index !== -1) {
+      this._events = [].concat(this._events.slice(0, index), newEvent, this._events.slice(index + 1));
+    } else {
+      this._events.push(newEvent);
     }
-
-    this._events = [].concat(this._events.slice(0, index), newEvent, this._events.slice(index + 1));
-
-    return true;
   }
 
   createNewEvent() {
