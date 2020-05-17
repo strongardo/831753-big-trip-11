@@ -31,18 +31,27 @@ export default class PointController {
     this._onStartTimeChange = this._onStartTimeChange.bind(this);
     this._onEndTimeChange = this._onEndTimeChange.bind(this);
 
-    this._temporaryEvent = Object.assign({}, this._eventsModel.getEvent(this._eventId));
+    if (!this._isThisNewEvent) {
+      this._temporaryEvent = Object.assign({}, this._eventsModel.getEvent(this._eventId));
+    } else {
+      this._temporaryEvent = Object.assign({}, this._eventsModel.createNewEvent());
+    }
   }
 
   render() {
     if (!this._isIventOpened) {
-      const event = this._eventsModel.getEvent(this._eventId);
+      let event = this._eventsModel.getEvent(this._eventId);
+
+      if (this._isThisNewEvent) {
+        event = this._eventsModel.createNewEvent();
+      }
 
       this._pointComponent = new PointComponent(event);
       this._pointComponent.setEditButtonClickHandler(this._onEditButtonClick);
 
       if (this._formComponent) {
         this._replaceEditToEvent();
+        this._isIventOpened = true;
         return;
       }
       render(this._container, this._pointComponent, this._place);
@@ -55,17 +64,17 @@ export default class PointController {
     if (this._isIventOpened) {
       let event = this._eventsModel.getEvent(this._eventId);
 
+      if (this._isThisNewEvent) {
+        event = this._eventsModel.createNewEvent();
+      }
+
       this._formComponent = new FormComponent(event, this._isThisNewEvent, destinations);
       this._replaceEventToEdit();
       this._isIventOpened = false;
     } else {
+      const oldFormComponent = this._formComponent;
       this._formComponent = new FormComponent(newEvent, this._isThisNewEvent, destinations);
-      if (this._isThisNewEvent) {
-        render(this._container, this._formComponent, this._place);
-      } else {
-        const oldFormComponent = this._formComponent;
-        replace(this._formComponent, oldFormComponent);
-      }
+      replace(this._formComponent, oldFormComponent);
     }
     this._addFormHandlers();
   }

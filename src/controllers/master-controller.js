@@ -60,8 +60,8 @@ export default class MasterController {
     }
     const pointController = new PointController(container, RenderPosition.AFTERBEGIN, this._eventsModel, 9999, this._closeAllForms, this._reRenderDays, true, this._toggleAddBtnStatus, this._api);
     this._observer.push(pointController);
-    const newEvent = this._eventsModel.createNewEvent();
-    pointController.formRender(newEvent);
+    pointController.render();
+    pointController.formRender();
   }
 
   _renderStatistic() {
@@ -144,8 +144,13 @@ export default class MasterController {
   }
 
   _closeAllForms() {
-    this._observer.forEach((pointController) => {
+    this._observer.forEach((pointController, index) => {
       pointController.render();
+      if (pointController._isThisNewEvent) {
+        pointController._pointComponent.removeElement();
+        this._observer.splice(index, index);
+        this._toggleAddBtnStatus();
+      }
     });
   }
 
