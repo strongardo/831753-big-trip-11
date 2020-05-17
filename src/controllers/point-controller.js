@@ -163,31 +163,65 @@ export default class PointController {
     this._reRenderPoints();
   }
 
-  _onDeleteBtnClick() {
+  _onError(elem) {
+    this._toggleFormStatus(elem);
+    elem.classList.add(`shake`);
+    elem.style.border = `1px solid red`;
+  }
+
+  _toggleFormStatus(form) {
+    form.querySelectorAll(`input, button`)
+      .forEach((elem) => {
+        elem.disabled = !elem.disabled;
+      });
+  }
+
+  _onDeleteBtnClick(evt) {
     if (this._isThisNewEvent) {
-      this._onChangeEvent();
-      this._toggleAddBtnStatus();
+      this._closeOtherForms();
     } else {
+      const form = this._formComponent.getElement();
+      form.style.border = ``;
+      evt.target.innerText = `Deleting…`;
       this._api.deleteEvent(this._eventId)
       .then(() => {
         this._onChangeEvent();
+      })
+      .catch(() => {
+        evt.target.innerText = `Delete`;
+        this._onError(form);
       });
     }
   }
 
   _onSaveBtnClick(evt) {
     evt.preventDefault();
+    const form = this._formComponent.getElement();
+    form.style.border = ``;
+    this._toggleFormStatus(form);
+    evt.target.innerText = `Saving…`;
+
+    const onSaveError = () => {
+      evt.target.innerText = `Save`;
+      this._onError(form);
+    };
 
     if (this._isThisNewEvent) {
       this._api.createEvent(this._temporaryEvent)
         .then((eventFromServer) => {
           this._onChangeEvent(eventFromServer);
           this._toggleAddBtnStatus();
+        })
+        .catch(() => {
+          onSaveError();
         });
     } else {
       this._api.updateEvent(this._eventId, this._temporaryEvent)
         .then((eventFromServer) => {
           this._onChangeEvent(eventFromServer);
+        })
+        .catch(() => {
+          onSaveError();
         });
     }
   }
