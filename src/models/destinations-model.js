@@ -10,4 +10,15 @@ export default class Destinations {
   getDestinations() {
     return this._destinations;
   }
+
+  getDestination(name) {
+    const destination = this._destinations.find((it) => {
+      if (it.name === name) {
+        return true;
+      }
+      return false;
+    });
+
+    return destination;
+  }
 }

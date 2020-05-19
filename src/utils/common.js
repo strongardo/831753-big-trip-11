@@ -14,14 +14,15 @@ export const changeTimeFormat = (value) => {
     const days = Math.round(value / 1440);
     const balance = value % 1440;
     const hours = Math.round(balance / 60);
-    const minutes = balance % 60;
+    const minutes = Math.round(balance % 60);
     return `${changeFormat(days)}D ${changeFormat(hours)}H ${changeFormat(minutes)}M`;
   } else if (value > 59) {
     const hours = Math.round(value / 60);
-    const minutes = value % 60;
+    const minutes = Math.round(value % 60);
     return `${changeFormat(hours)}H ${changeFormat(minutes)}M`;
   } else {
-    return `${changeFormat(value)}M`;
+    const minutes = Math.round(changeFormat(value));
+    return `${minutes}M`;
   }
 };
 

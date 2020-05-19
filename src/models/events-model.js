@@ -5,6 +5,7 @@ export default class Points {
     this._events = [];
 
     this._filterType = FilterType.DEFAULT;
+    this._sortType = SortType.DEFAULT;
   }
 
   setEvents(events) {
@@ -15,14 +16,25 @@ export default class Points {
     return this._events;
   }
 
-  getSortedEvents(sortType) {
-    const events = this._getFilteredEvents();
-    return this._getSortedEvents(events, sortType);
+  setFilterType(filterType) {
+    this._filterType = filterType;
   }
 
-  getFilteredEvents(filterType) {
-    this._filterType = filterType;
-    return this._getFilteredEvents();
+  getFilterType() {
+    return this._filterType;
+  }
+
+  setSortType(sortType) {
+    this._sortType = sortType;
+  }
+
+  getSortType() {
+    return this._sortType;
+  }
+
+  getEvents() {
+    const events = this._getFilteredEvents();
+    return this._getSortedEvents(events);
   }
 
   getEvent(id) {
@@ -84,11 +96,11 @@ export default class Points {
     return filteredEvents;
   }
 
-  _getSortedEvents(events, sortType) {
+  _getSortedEvents(events) {
     let sortedEvents = [];
     const eventsCopy = events.slice();
 
-    switch (sortType) {
+    switch (this._sortType) {
       case SortType.TIME:
         sortedEvents = eventsCopy.sort((a, b) => (b.dateTo - b.dateFrom) - (a.dateTo - a.dateFrom));
         break;

@@ -84,12 +84,12 @@ export default class MasterController {
   }
 
   _renderSort() {
-    this._sortController = new SortController(this._onChangeSort);
+    this._sortController = new SortController(this._onChangeSort, this._eventsModel);
     this._sortController.render();
   }
 
   _renderFilter() {
-    this._filterController = new FilterController(this._onChangeFilter);
+    this._filterController = new FilterController(this._onChangeFilter, this._eventsModel);
     this._filterController.render();
   }
 
@@ -158,25 +158,25 @@ export default class MasterController {
 
   _onChangeFilter(filterType) {
     this._sortController.resetSorts();
-    const events = this._eventsModel.getFilteredEvents(filterType);
-    this._reRenderDays(events);
+    this._eventsModel.setFilterType(filterType);
+    this._reRenderDays();
   }
 
   _onChangeSort(sortType) {
-    const events = this._eventsModel.getSortedEvents(sortType);
-
-    if (sortType !== SortType.DEFAULT) {
-      this._clearDays();
-      this._renderPoints(events);
-      return;
-    }
-    this._reRenderDays(events);
+    this._eventsModel.setSortType(sortType);
+    this._reRenderDays();
   }
 
-  _reRenderDays(events = this._eventsModel.getAllEvents()) {
+  _reRenderDays(events = this._eventsModel.getEvents()) {
     this._clearDays();
     if (events.length > 0) {
-      this._renderDays(events);
+      const sortType = this._eventsModel.getSortType();
+      if (sortType !== SortType.DEFAULT) {
+        this._renderPoints(events);
+        return;
+      } else {
+        this._renderDays(events);
+      }
     } else {
       this._renderStub();
     }

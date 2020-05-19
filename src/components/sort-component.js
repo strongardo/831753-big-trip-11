@@ -1,12 +1,10 @@
 import AbstractComponent from "./abstract-component.js";
 import {createSortTemplate} from "../templates/sort-template.js";
-import {SortType} from "../const.js";
 
 export default class Sort extends AbstractComponent {
-  constructor() {
+  constructor(eventsModel) {
     super();
-
-    this._currenSortType = SortType.DEFAULT;
+    this._eventsModel = eventsModel;
   }
 
   getTemplate() {
@@ -21,12 +19,11 @@ export default class Sort extends AbstractComponent {
     target.addEventListener(`change`, (evt) => {
 
       const sortType = evt.target.dataset.sortType;
+      const currentSortType = this._eventsModel.getSortType();
 
-      if (this._currenSortType === sortType) {
+      if (currentSortType === sortType) {
         return;
       }
-
-      this._currenSortType = sortType;
 
       handler(sortType);
     });
