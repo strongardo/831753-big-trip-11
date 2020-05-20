@@ -1,3 +1,4 @@
+import {INDEX_FOR_MISSING_ITEM} from "../const.js";
 import PointComponent from "../components/point-component.js";
 import FormComponent from "../components/form-component.js";
 import {render, replace} from "../utils/dom.js";
@@ -165,7 +166,7 @@ export default class PointController {
     } else {
       const index = temporaryOffers.findIndex((it) => it.title === offerTitle);
 
-      if (index === -1) {
+      if (index === INDEX_FOR_MISSING_ITEM) {
         return;
       }
 

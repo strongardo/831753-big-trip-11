@@ -1,4 +1,4 @@
-import {START_INDEX_FOR_OFFERS, LAST_INDEX_FOR_OFFERS} from "../const.js";
+import {START_INDEX_FOR_OFFERS, LAST_INDEX_FOR_OFFERS, MILLISECONDS_IN_ONE_MINUTE} from "../const.js";
 import {changeFormat, changeTimeFormat, capitalizeFirstLetter, getHeadingPretext} from "../utils/common.js";
 
 const createTimeMarkup = (time) => {
@@ -38,7 +38,7 @@ export const createPointTemplate = (event) => {
   const dateTo = event.dateTo;
   const dateFromMarkup = createTimeMarkup(dateFrom);
   const dateToMarkup = createTimeMarkup(dateTo);
-  const duration = changeTimeFormat((dateTo - dateFrom) / 60000);
+  const duration = changeTimeFormat((dateTo - dateFrom) / MILLISECONDS_IN_ONE_MINUTE);
   const price = event.basePrice;
   const offersMarkup = createOffersMarkup(event.offers);
 
