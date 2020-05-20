@@ -2,7 +2,6 @@ import API from "./api.js";
 import EventsModel from "./models/events-model.js";
 import DestinationsModel from "./models/destinations-model.js";
 import OffersModel from "./models/offers-model.js";
-// import HeaderController from "./controllers/header-controller.js";
 import MasterController from "./controllers/master-controller.js";
 import LoadingComponent from "./components/loading-component.js";
 import StubComponent from "./components/stub-component.js";
@@ -41,10 +40,8 @@ api.getEvents()
 
     eventsModel.setEvents(events);
 
-    // const headerController = new HeaderController(eventsModel);
     const masterController = new MasterController(eventsModel, destinationsModel, offersModel, api);
 
-    // headerController.render();
     masterController.render();
   })
   .catch(() => {

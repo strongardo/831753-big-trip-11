@@ -34,23 +34,26 @@ export default class MasterController {
     this._onChangeSort = this._onChangeSort.bind(this);
     this._onAddBtnClick = this._onAddBtnClick.bind(this);
     this._reRenderDays = this._reRenderDays.bind(this);
-    this._renderCharts = this._renderCharts.bind(this);
     this._toggleAddBtnStatus = this._toggleAddBtnStatus.bind(this);
   }
 
   render() {
-    this._addBtn.addEventListener(`click`, this._onAddBtnClick);
-
-    this._renderStatistic();
+    this._setAddBtnClickHandler();
 
     this._renderNav();
     this._renderFilter();
+    this._renderSort();
 
     const events = this._eventsModel.getAllEvents();
 
-    this._renderSort();
     this._renderDaysList();
     this._renderDays(events);
+
+    this._renderStatistic();
+  }
+
+  _setAddBtnClickHandler() {
+    this._addBtn.addEventListener(`click`, this._onAddBtnClick);
   }
 
   _onAddBtnClick() {
@@ -60,7 +63,7 @@ export default class MasterController {
     if (!container) {
       container = this._container;
     }
-    const pointController = new PointController(container, RenderPosition.AFTERBEGIN, this._eventsModel, this._destinationsModel, this._offersModel, 9999, this._closeAllForms, this._reRenderDays, true, this._toggleAddBtnStatus, this._api);
+    const pointController = new PointController(container, RenderPosition.AFTERBEGIN, this._eventsModel, this._destinationsModel, this._offersModel, null, this._closeAllForms, this._reRenderDays, true, this._toggleAddBtnStatus, this._api);
     this._observer.push(pointController);
     pointController.render();
     pointController.formRender();
@@ -69,10 +72,6 @@ export default class MasterController {
   _renderStatistic() {
     const сontainer = document.querySelector(`.page-main__container`);
     render(сontainer, this._statisticComponent, RenderPosition.BEFOREEND);
-  }
-
-  _renderCharts() {
-    this._statisticComponent.renderCharts();
   }
 
   _renderDaysList() {
@@ -109,7 +108,7 @@ export default class MasterController {
     }
     const days = this._getDays(events);
     days.forEach((day, i) => {
-      const dayComponent = new DayComponent(i + 1, day); // Номер дня не может быть нулем, поэтому +1
+      const dayComponent = new DayComponent(i + 1, day);
       const thisDayEvents = this._getThisDayEvents(day, events);
       this._renderDay(dayComponent, thisDayEvents);
     });
@@ -148,8 +147,8 @@ export default class MasterController {
   _closeAllForms() {
     this._observer.forEach((pointController, index) => {
       pointController.render();
-      if (pointController._isThisNewEvent) {
-        pointController._pointComponent.removeElement();
+      if (pointController.isThisNewEvent) {
+        pointController.pointComponent.removeElement();
         this._observer.splice(index, index);
         this._toggleAddBtnStatus();
       }

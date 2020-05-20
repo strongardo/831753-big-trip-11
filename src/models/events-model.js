@@ -16,6 +16,11 @@ export default class Points {
     return this._events;
   }
 
+  getEvents() {
+    const events = this._getFilteredEvents();
+    return this._getSortedEvents(events);
+  }
+
   setFilterType(filterType) {
     this._filterType = filterType;
   }
@@ -30,11 +35,6 @@ export default class Points {
 
   getSortType() {
     return this._sortType;
-  }
-
-  getEvents() {
-    const events = this._getFilteredEvents();
-    return this._getSortedEvents(events);
   }
 
   getEvent(id) {

@@ -4,6 +4,7 @@ import {render, replace} from "../utils/dom.js";
 
 export default class PointController {
   constructor(container, place, eventsModel, destinationsModel, offersModel, id, closeOtherForms, reRenderDays, isThisNewEvent, toggleAddBtnStatus, api) {
+    this.isThisNewEvent = isThisNewEvent;
     this._container = container;
     this._place = place;
     this._eventsModel = eventsModel;
@@ -12,13 +13,12 @@ export default class PointController {
     this._eventId = id;
     this._closeOtherForms = closeOtherForms;
     this._reRenderDays = reRenderDays;
-    this._isThisNewEvent = isThisNewEvent;
     this._toggleAddBtnStatus = toggleAddBtnStatus;
     this._api = api;
 
     this._isIventOpened = false;
 
-    this._pointComponent = null;
+    this.pointComponent = null;
     this._formComponent = null;
 
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
@@ -34,7 +34,7 @@ export default class PointController {
     this._onEndTimeChange = this._onEndTimeChange.bind(this);
     this._onOfferChange = this._onOfferChange.bind(this);
 
-    if (!this._isThisNewEvent) {
+    if (!this.isThisNewEvent) {
       this._temporaryEvent = Object.assign({}, this._eventsModel.getEvent(this._eventId));
     } else {
       this._temporaryEvent = Object.assign({}, this._eventsModel.createNewEvent());
@@ -45,19 +45,19 @@ export default class PointController {
     if (!this._isIventOpened) {
       let event = this._eventsModel.getEvent(this._eventId);
 
-      if (this._isThisNewEvent) {
+      if (this.isThisNewEvent) {
         event = this._eventsModel.createNewEvent();
       }
 
-      this._pointComponent = new PointComponent(event);
-      this._pointComponent.setEditButtonClickHandler(this._onEditButtonClick);
+      this.pointComponent = new PointComponent(event);
+      this.pointComponent.setEditButtonClickHandler(this._onEditButtonClick);
 
       if (this._formComponent) {
         this._replaceEditToEvent();
         this._isIventOpened = true;
         return;
       }
-      render(this._container, this._pointComponent, this._place);
+      render(this._container, this.pointComponent, this._place);
       this._isIventOpened = true;
     }
   }
@@ -68,19 +68,19 @@ export default class PointController {
     if (this._isIventOpened) {
       let event = this._eventsModel.getEvent(this._eventId);
 
-      if (this._isThisNewEvent) {
+      if (this.isThisNewEvent) {
         event = this._eventsModel.createNewEvent();
       }
 
       const offers = this._offersModel.getPossibleOffers(event.type);
 
-      this._formComponent = new FormComponent(event, this._isThisNewEvent, destinations, offers);
+      this._formComponent = new FormComponent(event, this.isThisNewEvent, destinations, offers);
       this._replaceEventToEdit();
       this._isIventOpened = false;
     } else {
       const oldFormComponent = this._formComponent;
       const offers = this._offersModel.getPossibleOffers(newEvent.type);
-      this._formComponent = new FormComponent(newEvent, this._isThisNewEvent, destinations, offers);
+      this._formComponent = new FormComponent(newEvent, this.isThisNewEvent, destinations, offers);
       replace(this._formComponent, oldFormComponent);
     }
     this._addFormHandlers();
@@ -95,7 +95,7 @@ export default class PointController {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
 
     if (isEscKey) {
-      if (this._isThisNewEvent) {
+      if (this.isThisNewEvent) {
         this._closeOtherForms();
       } else {
         this.render();
@@ -105,17 +105,19 @@ export default class PointController {
   }
 
   _replaceEventToEdit() {
-    replace(this._formComponent, this._pointComponent);
+    replace(this._formComponent, this.pointComponent);
+  }
+
+  _replaceEditToEvent() {
+    replace(this.pointComponent, this._formComponent);
   }
 
   _addFormHandlers() {
-    if (!this._isThisNewEvent) {
+    if (!this.isThisNewEvent) {
       this._formComponent.setCloseButtonClickHandler(this._onCloseButtonClick);
       this._formComponent.setFavoriteChangeHandler(this._onFavoriteChange);
     }
     this._formComponent.setTypeChangeHandler(this._onTypeChange);
-    this._formComponent.setDeleteBtnClickHandler(this._onDeleteBtnClick);
-    this._formComponent.setSaveBtnClickHandler(this._onSaveBtnClick);
     this._formComponent.setCityChangeHandler(this._onCityChange);
     this._formComponent.setPriceChangeHandler(this._onPriceChange);
     this._formComponent.setStartTimeChangeHandler(this._onStartTimeChange);
@@ -123,7 +125,13 @@ export default class PointController {
     this._formComponent.setOffersChangeHandler(this._onOfferChange);
     this._formComponent.setPriceKeypressHandler();
     this._formComponent.setCityKeypressHandler();
+    this._formComponent.setDeleteBtnClickHandler(this._onDeleteBtnClick);
+    this._formComponent.setSaveBtnClickHandler(this._onSaveBtnClick);
     document.addEventListener(`keydown`, this._onEscKeyDown);
+  }
+
+  _removeOnEscKeyDownHandler() {
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
   _onCloseButtonClick() {
@@ -208,7 +216,7 @@ export default class PointController {
   }
 
   _onDeleteBtnClick(evt) {
-    if (this._isThisNewEvent) {
+    if (this.isThisNewEvent) {
       this._closeOtherForms();
     } else {
       const form = this._formComponent.getElement();
@@ -243,7 +251,7 @@ export default class PointController {
       this._onError(form);
     };
 
-    if (this._isThisNewEvent) {
+    if (this.isThisNewEvent) {
       this._api.createEvent(this._temporaryEvent)
         .then((eventFromServer) => {
           this._onChangeEvent(eventFromServer);
@@ -262,13 +270,4 @@ export default class PointController {
         });
     }
   }
-
-  _removeOnEscKeyDownHandler() {
-    document.removeEventListener(`keydown`, this._onEscKeyDown);
-  }
-
-  _replaceEditToEvent() {
-    replace(this._pointComponent, this._formComponent);
-  }
-
 }
