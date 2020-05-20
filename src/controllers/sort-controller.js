@@ -1,13 +1,14 @@
-import {RenderPosition} from "../const.js";
+import {SortType, RenderPosition} from "../const.js";
 import SortComponent from "../components/sort-component.js";
 import {render} from "../utils/dom.js";
 
 
 export default class SortController {
-  constructor(onChangeSort) {
+  constructor(onChangeSort, eventsModel) {
     this._onChangeSort = onChangeSort;
+    this._eventsModel = eventsModel;
 
-    this._sortComponent = new SortComponent();
+    this._sortComponent = new SortComponent(this._eventsModel);
 
     this.resetSorts = this.resetSorts.bind(this);
   }
@@ -31,6 +32,7 @@ export default class SortController {
 
     if (defaultSortButton) {
       defaultSortButton.checked = true;
+      this._eventsModel.setSortType(SortType.DEFAULT);
     }
   }
 }

@@ -1,12 +1,10 @@
 import AbstractComponent from "./abstract-component.js";
 import {createFilterTemplate} from "../templates/filter-template.js";
-import {FilterType} from "../const.js";
 
 export default class Filter extends AbstractComponent {
-  constructor() {
+  constructor(eventsModel) {
     super();
-
-    this._currenFilterType = FilterType.DEFAULT;
+    this._eventsModel = eventsModel;
   }
 
   getTemplate() {
@@ -17,11 +15,11 @@ export default class Filter extends AbstractComponent {
     target.addEventListener(`change`, (evt) => {
 
       const filterType = evt.target.dataset.filterType;
+      const currentFilterType = this._eventsModel.getFilterType();
 
-      if (this._currenFilterType === filterType) {
+      if (currentFilterType === filterType) {
         return;
       }
-
       this._currenFilterType = filterType;
 
       handler(filterType);

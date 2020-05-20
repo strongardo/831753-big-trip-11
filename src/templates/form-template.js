@@ -37,16 +37,29 @@ const createCitiesOptionsMarkup = (destinations) => {
   }).join(`\n`);
 };
 
-const createOffersMarkup = (array, type) => {
-  return array.map((it) => {
+const createOffersMarkup = (type, possibleOffers, currentOffers) => {
 
-    const name = it.title;
-    const price = it.price;
+  return possibleOffers.map((possibleOffer, index) => {
+
+    const name = possibleOffer.title;
+    const price = possibleOffer.price;
+
+    const getCheckStatus = () => {
+      let status = ``;
+
+      currentOffers.forEach((currentOffer) => {
+        if (currentOffer.title === name) {
+          status = `checked`;
+          return;
+        }
+      });
+      return status;
+    };
 
     return (
       `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-1" type="checkbox" name="event-offer-${type}-1" checked>
-        <label class="event__offer-label" for="event-offer-${type}-1">
+        <input data-offer-title="${name}" class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-${index}" type="checkbox" name="event-offer-${type}-${index}" ${getCheckStatus()}>
+        <label class="event__offer-label" for="event-offer-${type}-${index}">
           <span class="event__offer-title">${name}</span>
           &plus;
           &euro;&nbsp;<span class="event__offer-price">${price}</span>
@@ -67,10 +80,10 @@ const createPhotosMarkup = (pictures) => {
   }).join(`\n`);
 };
 
-const createOffersContainerMarkup = (type, event) => {
-  if (event.offers.length) {
+const createOffersContainerMarkup = (type, possibleOffers, currentOffers) => {
+  if (possibleOffers.length) {
 
-    const offersMarkup = createOffersMarkup(event.offers, type);
+    const offersMarkup = createOffersMarkup(type, possibleOffers, currentOffers);
 
     return (
       `<section class="event__section  event__section--offers">
@@ -101,12 +114,31 @@ const createExtraMarkup = (favoritecheckBoxCondition) => {
   );
 };
 
-export const createFormTemplate = (event, isThisNewEvent, destinations) => {
+const createDestinationMurkup = (description, pictures) => {
+  if (description) {
+    return (
+      `<section class="event__section  event__section--destination">
+      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+       <p class="event__destination-description">${description}</p>
+        <div class="event__photos-container">
+          <div class="event__photos-tape">
+            ${createPhotosMarkup(pictures)}
+          </div>
+        </div>
+    </section>`
+    );
+  } else {
+    return ``;
+  }
+};
+
+export const createFormTemplate = (event, isThisNewEvent, destinations, possibleOffers) => {
   const price = event.basePrice;
   const type = event.type;
   const capitalizeFirstLetterType = capitalizeFirstLetter(type);
   const headingPretext = getHeadingPretext(type);
-  const destination = event.destination.name;
+  const destination = (event.destination) ? event.destination.name : ``;
+  const description = (event.destination) ? event.destination.description : ``;
   const transferTypesMarkup = createTypesMarkup(TRANSFER_TYPES);
   const activityTypesMarkup = createTypesMarkup(ACTIVITY_TYPES);
   const citiesOptionsMarkup = createCitiesOptionsMarkup(destinations);
@@ -114,10 +146,10 @@ export const createFormTemplate = (event, isThisNewEvent, destinations) => {
   const dateTo = event.dateTo;
   const dateFromMarkup = createTimeMarkup(dateFrom);
   const dateToMarkup = createTimeMarkup(dateTo);
-  const offersContainerMarkup = createOffersContainerMarkup(type, event);
-  const description = event.destination.description;
-  const pictures = event.destination.pictures;
-  const photosMarkup = createPhotosMarkup(pictures);
+  const currentOffers = event.offers;
+  const offersContainerMarkup = createOffersContainerMarkup(type, possibleOffers, currentOffers);
+  const pictures = (event.destination) ? event.destination.pictures : [];
+  const destinationMurkup = createDestinationMurkup(description, pictures);
   const deleteBtnText = (isThisNewEvent) ? `Cancel` : `Delete`;
   const favoritecheckBoxCondition = getFavoritecheckBoxCondition(event.isFavorite);
   const extraMarkup = (isThisNewEvent) ? `` : createExtraMarkup(favoritecheckBoxCondition);
@@ -186,18 +218,9 @@ export const createFormTemplate = (event, isThisNewEvent, destinations) => {
 
       ${offersContainerMarkup}
 
-              <section class="event__section  event__section--destination">
-                <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-                <p class="event__destination-description">${description}</p>
+      ${destinationMurkup}
 
-                <div class="event__photos-container">
-                  <div class="event__photos-tape">
-                    ${photosMarkup}
-                  </div>
-                </div>
-              </section>
     </section>
-
   </form>`
   );
 };

@@ -3,26 +3,9 @@ import {FilterType, SortType, eventTemplate} from "../const.js";
 export default class Points {
   constructor() {
     this._events = [];
-    this._destinations = [];
-    this._offers = [];
 
     this._filterType = FilterType.DEFAULT;
-  }
-
-  setOffers(offers) {
-    this._offers = offers;
-  }
-
-  getOffers() {
-    return this._offers;
-  }
-
-  setDestinations(destinations) {
-    this._destinations = destinations;
-  }
-
-  getDestinations() {
-    return this._destinations;
+    this._sortType = SortType.DEFAULT;
   }
 
   setEvents(events) {
@@ -33,14 +16,25 @@ export default class Points {
     return this._events;
   }
 
-  getSortedEvents(sortType) {
+  getEvents() {
     const events = this._getFilteredEvents();
-    return this._getSortedEvents(events, sortType);
+    return this._getSortedEvents(events);
   }
 
-  getFilteredEvents(filterType) {
+  setFilterType(filterType) {
     this._filterType = filterType;
-    return this._getFilteredEvents();
+  }
+
+  getFilterType() {
+    return this._filterType;
+  }
+
+  setSortType(sortType) {
+    this._sortType = sortType;
+  }
+
+  getSortType() {
+    return this._sortType;
   }
 
   getEvent(id) {
@@ -102,11 +96,11 @@ export default class Points {
     return filteredEvents;
   }
 
-  _getSortedEvents(events, sortType) {
+  _getSortedEvents(events) {
     let sortedEvents = [];
     const eventsCopy = events.slice();
 
-    switch (sortType) {
+    switch (this._sortType) {
       case SortType.TIME:
         sortedEvents = eventsCopy.sort((a, b) => (b.dateTo - b.dateFrom) - (a.dateTo - a.dateFrom));
         break;

@@ -4,12 +4,13 @@ import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 
 export default class Form extends AbstractComponent {
-  constructor(event, isThisNewEvent, destinations) {
+  constructor(event, isThisNewEvent, destinations, offers) {
     super();
 
     this._event = event;
     this._isThisNewEvent = isThisNewEvent;
     this._destinations = destinations;
+    this._offers = offers;
 
     this._flatpickrStart = null;
     this._flatpickrEnd = null;
@@ -23,7 +24,7 @@ export default class Form extends AbstractComponent {
   }
 
   getTemplate() {
-    return createFormTemplate(this._event, this._isThisNewEvent, this._destinations);
+    return createFormTemplate(this._event, this._isThisNewEvent, this._destinations, this._offers);
   }
 
   _applyFlatpickrs() {
@@ -143,6 +144,13 @@ export default class Form extends AbstractComponent {
       }
 
       cb(tripType);
+    });
+  }
+
+  setOffersChangeHandler(cb) {
+    const inputs = this.getElement().querySelectorAll(`.event__offer-checkbox`);
+    inputs.forEach((input) => {
+      input.addEventListener(`change`, cb);
     });
   }
 }

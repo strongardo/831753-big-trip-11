@@ -1,12 +1,13 @@
-import {RenderPosition} from "../const.js";
+import {FilterType, RenderPosition} from "../const.js";
 import FilterComponent from "../components/filter-component.js";
 import {render} from "../utils/dom.js";
 
 export default class FilterController {
-  constructor(onChangeFilter) {
+  constructor(onChangeFilter, eventsModel) {
     this._onChangeFilter = onChangeFilter;
+    this._eventsModel = eventsModel;
 
-    this._filterComponent = new FilterComponent();
+    this._filterComponent = new FilterComponent(eventsModel);
 
     this.resetFilters = this.resetFilters.bind(this);
   }
@@ -27,5 +28,6 @@ export default class FilterController {
   resetFilters() {
     const defaultFilterButton = this._filterComponent.getElement().querySelector(`#filter-everything`);
     defaultFilterButton.checked = true;
+    this._eventsModel.setFilterType(FilterType.DEFAULT);
   }
 }
