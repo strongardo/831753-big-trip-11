@@ -1,4 +1,4 @@
-import {START_INDEX_FOR_OFFERS, LAST_INDEX_FOR_OFFERS, MILLISECONDS_IN_ONE_MINUTE} from "../const.js";
+import {Index, MILLISECONDS_IN_ONE_MINUTE} from "../const.js";
 import {changeFormat, changeTimeFormat, capitalizeFirstLetter, getHeadingPretext} from "../utils/common.js";
 
 const createTimeMarkup = (time) => {
@@ -10,7 +10,7 @@ const createTimeMarkup = (time) => {
 const createOffersMarkup = (offers) => {
   if (offers.length) {
 
-    return offers.slice(START_INDEX_FOR_OFFERS, LAST_INDEX_FOR_OFFERS).map((offer) => {
+    return offers.slice(Index.START_FOR_OFFERS, Index.LAST_FOR_OFFERS).map((offer) => {
 
       const offerName = offer.title;
       const offerPrice = offer.price;

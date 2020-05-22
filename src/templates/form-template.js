@@ -18,8 +18,8 @@ const createTimeMarkup = (time) => {
   );
 };
 
-const createTypesMarkup = (array) => {
-  return array.map((it) => {
+const createTypesMarkup = (types) => {
+  return types.map((it) => {
     return (
       `<div class="event__type-item">
         <input id="event-type-${it}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${it}">

@@ -1,4 +1,4 @@
-import {FilterType, SortType, eventTemplate, INDEX_FOR_MISSING_ITEM} from "../const.js";
+import {FilterType, SortType, eventTemplate, Index} from "../const.js";
 
 export default class Events {
   constructor() {
@@ -46,7 +46,7 @@ export default class Events {
   updateEvent(id, newEvent) {
     const index = this._events.findIndex((it) => it.id === id);
 
-    if (index !== INDEX_FOR_MISSING_ITEM) {
+    if (index !== Index.FOR_MISSING_ITEM) {
       this._events = [].concat(this._events.slice(0, index), newEvent, this._events.slice(index + 1));
     } else {
       this._events.push(newEvent);
@@ -64,7 +64,7 @@ export default class Events {
   deleteEvent(id) {
     const index = this._events.findIndex((it) => it.id === id);
 
-    if (index === INDEX_FOR_MISSING_ITEM) {
+    if (index === Index.FOR_MISSING_ITEM) {
       return false;
     }
 

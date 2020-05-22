@@ -9,10 +9,7 @@ export default class Offers {
 
   getPossibleOffers(type) {
     const offersForType = this._offers.find((it) => {
-      if (it.type === type) {
-        return true;
-      }
-      return false;
+      return it.type === type;
     });
 
     return offersForType.offers;

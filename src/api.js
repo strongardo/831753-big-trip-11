@@ -1,5 +1,5 @@
 import Event from "./models/events-adapter.js";
-import {SERVER_URL, START_SUCCESS_STATUS, START_UNSUCCESS_STATUS, HttpMethod} from "./const.js";
+import {SERVER_URL, HttpStatus, HttpMethod} from "./const.js";
 
 export default class API {
   constructor(authorization) {
@@ -8,7 +8,7 @@ export default class API {
   }
 
   checkStatus(response) {
-    if (response.status >= START_SUCCESS_STATUS && response.status < START_UNSUCCESS_STATUS) {
+    if (response.status >= HttpStatus.START_SUCCESS && response.status < HttpStatus.START_UNSUCCESS) {
       return response;
     } else {
       throw new Error(`${response.status}: ${response.statusText}`);

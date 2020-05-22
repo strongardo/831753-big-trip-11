@@ -1,16 +1,6 @@
-export const START_INDEX_FOR_EVENTS = 0;
-export const START_INDEX_FOR_NEXT_EVENTS = 1;
-export const START_INDEX_FOR_ACTIVITY_TYPES = 7;
-export const START_INDEX_FOR_OFFERS = 0;
-export const LAST_INDEX_FOR_OFFERS = 3;
-export const INDEX_FOR_FIRST_EVENT = 0;
-export const INDEX_FOR_SECOND_EVENT = 1;
-export const CITIES_FOR_INFO_QUANTITY = 3;
-export const START_INDEX_FOR_DAYS = 1;
-export const INDEX_FOR_MISSING_ITEM = -1;
-export const START_SUCCESS_STATUS = 200;
-export const START_UNSUCCESS_STATUS = 200;
 export const MILLISECONDS_IN_ONE_MINUTE = 60000;
+
+export const SERVER_URL = `https://11.ecmascript.pages.academy/big-trip/`;
 
 export const MONTHS = [`JAN`, `FEB`, `MAR`, `APR`, `MAY`, `JUN`, `JUL`, `AUG`, `SEP`, `OCT`, `NOV`, `DEC`];
 
@@ -18,7 +8,19 @@ export const TYPES = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `fli
 export const TRANSFER_TYPES = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`];
 export const ACTIVITY_TYPES = [`check-in`, `sightseeing`, `restaurant`];
 
-export const SERVER_URL = `https://11.ecmascript.pages.academy/big-trip/`;
+export const Index = {
+  START_FOR_EVENTS: 0,
+  START_FOR_DAYS: 1,
+  START_FOR_ACTIVITY_TYPES: 7,
+  START_FOR_OFFERS: 0,
+  LAST_FOR_OFFERS: 3,
+  FOR_MISSING_ITEM: -1,
+};
+
+export const HttpStatus = {
+  START_SUCCESS: 200,
+  START_UNSUCCESS: 300,
+};
 
 export const HttpMethod = {
   PUT: `PUT`,

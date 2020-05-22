@@ -1,4 +1,4 @@
-import {INDEX_FOR_MISSING_ITEM} from "../const.js";
+import {Index} from "../const.js";
 import PointComponent from "../components/point-component.js";
 import FormComponent from "../components/form-component.js";
 import {render, replace} from "../utils/dom.js";
@@ -142,6 +142,12 @@ export default class PointController {
 
   _onFavoriteChange() {
     this._temporaryEvent.isFavorite = !this._temporaryEvent.isFavorite;
+    const newEvent = this._eventsModel.getEvent(this._eventId);
+    newEvent.isFavorite = this._temporaryEvent.isFavorite;
+    this._api.updateEvent(this._eventId, newEvent)
+      .then((eventFromServer) => {
+        this.formRender(eventFromServer);
+      });
   }
 
   _onTypeChange(tripType) {
@@ -166,7 +172,7 @@ export default class PointController {
     } else {
       const index = temporaryOffers.findIndex((it) => it.title === offerTitle);
 
-      if (index === INDEX_FOR_MISSING_ITEM) {
+      if (index === Index.FOR_MISSING_ITEM) {
         return;
       }
 

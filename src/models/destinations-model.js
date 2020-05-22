@@ -13,10 +13,7 @@ export default class Destinations {
 
   getDestination(name) {
     const destination = this._destinations.find((it) => {
-      if (it.name === name) {
-        return true;
-      }
-      return false;
+      return it.name === name;
     });
 
     return destination;

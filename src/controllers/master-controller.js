@@ -1,4 +1,4 @@
-import {START_INDEX_FOR_EVENTS, START_INDEX_FOR_DAYS, RenderPosition, SortType} from "../const.js";
+import {Index, RenderPosition, SortType} from "../const.js";
 import NavController from "./nav-controller.js";
 import FilterController from "./filter-controller.js";
 import SortController from "./sort-controller.js";
@@ -28,7 +28,7 @@ export default class MasterController {
     this._daysContainer = this._daysListComponent.getElement();
     this._addBtn = document.querySelector(`.trip-main__event-add-btn`);
 
-    this._observer = [];
+    this._pointControllers = [];
     this._closeAllForms = this._closeAllForms.bind(this);
     this._onChangeFilter = this._onChangeFilter.bind(this);
     this._onChangeSort = this._onChangeSort.bind(this);
@@ -64,7 +64,7 @@ export default class MasterController {
       container = this._container;
     }
     const pointController = new PointController(container, RenderPosition.AFTERBEGIN, this._eventsModel, this._destinationsModel, this._offersModel, null, this._closeAllForms, this._reRenderDays, true, this._toggleAddBtnStatus, this._api);
-    this._observer.push(pointController);
+    this._pointControllers.push(pointController);
     pointController.render();
     pointController.formRender();
   }
@@ -108,15 +108,15 @@ export default class MasterController {
     }
     const days = this._getDays(events);
     days.forEach((day, i) => {
-      const dayComponent = new DayComponent(i + START_INDEX_FOR_DAYS, day);
+      const dayComponent = new DayComponent(i + Index.START_FOR_DAYS, day);
       const thisDayEvents = this._getThisDayEvents(day, events);
       this._renderDay(dayComponent, thisDayEvents);
     });
   }
 
   _getDays(events) {
-    let currentDay = events[START_INDEX_FOR_EVENTS].dateFrom.getDate();
-    const days = [events[START_INDEX_FOR_EVENTS].dateFrom];
+    let currentDay = events[Index.START_FOR_EVENTS].dateFrom.getDate();
+    const days = [events[Index.START_FOR_EVENTS].dateFrom];
 
     for (const item of events) {
       if (item.dateFrom.getDate() !== currentDay) {
@@ -139,31 +139,38 @@ export default class MasterController {
     const tripEventsList = day.querySelector(`.trip-events__list`);
     events.forEach((event) => {
       const pointController = new PointController(tripEventsList, RenderPosition.BEFOREEND, this._eventsModel, this._destinationsModel, this._offersModel, event.id, this._closeAllForms, this._reRenderDays, false, this._toggleAddBtnStatus, this._api);
-      this._observer.push(pointController);
+      this._pointControllers.push(pointController);
       pointController.render();
     });
   }
 
   _closeAllForms() {
-    this._observer.forEach((pointController, index) => {
+    this._pointControllers.forEach((pointController, index) => {
       pointController.render();
       if (pointController.isThisNewEvent) {
         pointController.pointComponent.removeElement();
-        this._observer.splice(index, index);
+        this._pointControllers.splice(index, index);
         this._toggleAddBtnStatus();
       }
     });
   }
 
+  _onChangeSortOrFilter() {
+    this._reRenderDays();
+    if (this._addBtn.disabled) {
+      this._toggleAddBtnStatus();
+    }
+  }
+
   _onChangeFilter(filterType) {
     this._sortController.resetSorts();
     this._eventsModel.setFilterType(filterType);
-    this._reRenderDays();
+    this._onChangeSortOrFilter();
   }
 
   _onChangeSort(sortType) {
     this._eventsModel.setSortType(sortType);
-    this._reRenderDays();
+    this._onChangeSortOrFilter();
   }
 
   _reRenderDays(events = this._eventsModel.getEvents()) {
@@ -183,7 +190,7 @@ export default class MasterController {
 
   _clearDays() {
     this._daysContainer.innerHTML = ``;
-    this._observer = [];
+    this._pointControllers = [];
   }
 
   _resetFiltersAndSorts() {

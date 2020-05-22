@@ -1,4 +1,4 @@
-import {TYPES, START_INDEX_FOR_ACTIVITY_TYPES} from "../const.js";
+import {TYPES, Index} from "../const.js";
 
 export const RenderPosition = {
   AFTERBEGIN: `afterbegin`,
@@ -34,7 +34,7 @@ export const getHeadingPretext = (type) => {
   const isCurrentElement = (it) => {
     return it === type;
   };
-  return (TYPES.findIndex(isCurrentElement) < START_INDEX_FOR_ACTIVITY_TYPES) ? `to` : `in`;
+  return (TYPES.findIndex(isCurrentElement) < Index.START_FOR_ACTIVITY_TYPES) ? `to` : `in`;
 };
 
 export const calculateCostOfType = (events, type) => {
