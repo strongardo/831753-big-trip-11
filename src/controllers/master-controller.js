@@ -1,4 +1,4 @@
-import {START_INDEX_FOR_EVENTS, RenderPosition, SortType} from "../const.js";
+import {START_INDEX_FOR_EVENTS, START_INDEX_FOR_DAYS, RenderPosition, SortType} from "../const.js";
 import NavController from "./nav-controller.js";
 import FilterController from "./filter-controller.js";
 import SortController from "./sort-controller.js";
@@ -108,7 +108,7 @@ export default class MasterController {
     }
     const days = this._getDays(events);
     days.forEach((day, i) => {
-      const dayComponent = new DayComponent(i + 1, day);
+      const dayComponent = new DayComponent(i + START_INDEX_FOR_DAYS, day);
       const thisDayEvents = this._getThisDayEvents(day, events);
       this._renderDay(dayComponent, thisDayEvents);
     });

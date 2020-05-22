@@ -1,6 +1,6 @@
-import {FilterType, SortType, eventTemplate} from "../const.js";
+import {FilterType, SortType, eventTemplate, INDEX_FOR_MISSING_ITEM} from "../const.js";
 
-export default class Points {
+export default class Events {
   constructor() {
     this._events = [];
 
@@ -46,7 +46,7 @@ export default class Points {
   updateEvent(id, newEvent) {
     const index = this._events.findIndex((it) => it.id === id);
 
-    if (index !== -1) {
+    if (index !== INDEX_FOR_MISSING_ITEM) {
       this._events = [].concat(this._events.slice(0, index), newEvent, this._events.slice(index + 1));
     } else {
       this._events.push(newEvent);
@@ -64,7 +64,7 @@ export default class Points {
   deleteEvent(id) {
     const index = this._events.findIndex((it) => it.id === id);
 
-    if (index === -1) {
+    if (index === INDEX_FOR_MISSING_ITEM) {
       return false;
     }
 

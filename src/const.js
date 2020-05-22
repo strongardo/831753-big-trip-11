@@ -6,12 +6,25 @@ export const LAST_INDEX_FOR_OFFERS = 3;
 export const INDEX_FOR_FIRST_EVENT = 0;
 export const INDEX_FOR_SECOND_EVENT = 1;
 export const CITIES_FOR_INFO_QUANTITY = 3;
+export const START_INDEX_FOR_DAYS = 1;
+export const INDEX_FOR_MISSING_ITEM = -1;
+export const START_SUCCESS_STATUS = 200;
+export const START_UNSUCCESS_STATUS = 200;
+export const MILLISECONDS_IN_ONE_MINUTE = 60000;
 
 export const MONTHS = [`JAN`, `FEB`, `MAR`, `APR`, `MAY`, `JUN`, `JUL`, `AUG`, `SEP`, `OCT`, `NOV`, `DEC`];
 
 export const TYPES = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`, `check-in`, `sightseeing`, `restaurant`];
 export const TRANSFER_TYPES = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`];
 export const ACTIVITY_TYPES = [`check-in`, `sightseeing`, `restaurant`];
+
+export const SERVER_URL = `https://11.ecmascript.pages.academy/big-trip/`;
+
+export const HttpMethod = {
+  PUT: `PUT`,
+  POST: `POST`,
+  DELETE: `DELETE`,
+};
 
 export const SortType = {
   TIME: `time`,
